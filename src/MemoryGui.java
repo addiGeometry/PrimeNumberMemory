@@ -27,10 +27,11 @@ public class MemoryGui{
         System.out.println("Greatings " + args[0]);
         System.out.println("Enjoy the ride");
 
+        System.out.println("wacthi");
 
         MemoryGui userCMD = new MemoryGui(args[0],System.out, System.in);
 
-        //userCMD.printInstructions();
+        userCMD.printInstructions();
         userCMD.doCommandLoop();
     }
 
@@ -43,7 +44,7 @@ public class MemoryGui{
 
     }
 
-    /* public void printInstructions(){
+    public void printInstructions(){
         StringBuilder m = new StringBuilder();
         m.append("\n");
         m.append("\n");
@@ -65,7 +66,7 @@ public class MemoryGui{
         m.append(".. exit");
 
         this.outStream.println(m.toString());
-    } **/
+    }
 
     public void doCommandLoop(){
         boolean again = true;
