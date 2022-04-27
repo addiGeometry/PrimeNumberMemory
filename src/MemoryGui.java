@@ -15,8 +15,15 @@ public class MemoryGui{
     //Game Logic
     private final String playerName;
 
+    //Pattern
+    private static String dialoguePattern;
+
     //private String partnerName;
     public static void main(String args[]){
+        StringBuilder wstring = new StringBuilder();
+        wstring.append("\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\");
+        wstring.append("\n");
+
         System.out.println("Welcome to Prime Number Memory version 1.0");
 
         if(args.length < 1){
@@ -44,6 +51,85 @@ public class MemoryGui{
 
     }
 
+    public void doCommandLoop(){
+        boolean again = true;
+
+        while(again){
+            String cmdLineString = null;
+            try{
+
+                /*Read user Input. Kleine Anmerkung: Der Buffered Reader liest aus einem Character-Input-Stream.
+                Er (buffered) sammelt die ankommenden Characters, in diesem Fall am Input-Stream
+                und speichert sie zwischen. Die methode Read Line wartet auf einen Zeilenumbruch und liest dann ein**/
+                cmdLineString = inBufferedReader.readLine();
+
+                if(cmdLineString == null) break;
+
+                //Trim white spaces on input
+                cmdLineString.trim();
+
+                //Jetzt für Aufrufe mit Argumenten:
+                int spaceIndex = cmdLineString.indexOf(" ");
+                spaceIndex = spaceIndex != -1 ? spaceIndex : cmdLineString.length();
+
+                String commandString = cmdLineString.substring(0, spaceIndex);
+
+                //Paramterbehandlung:
+                String parameterSting = cmdLineString.substring(0, spaceIndex);
+                parameterSting = parameterSting.trim();
+
+                //Command Loop
+                switch(commandString){
+                    case "q":
+                    case EXIT:
+                        this.doExit();
+                        break;
+                    case CONNECT:
+                        this.doConnect(parameterSting);
+                        break;
+                    case OPEN:
+                        this.doOpen();
+                        break;
+                    case FLIP:
+                        this.doFLip(parameterSting);
+                        break;
+                    case PRINT:
+                        this.doPrint();
+                        break;
+
+                    default:
+                        this.outStream.println("unknown command:" + cmdLineString);
+                        this.printInstructions();
+                        break;
+                }
+            }
+            catch(Exception e){}
+        }
+    }
+
+    /************************************************************************************************************
+     ***                                            UI Implementation                                         ***
+     ***********************************************************************************************************/
+    private void doPrint() {
+    }
+
+    private void doFLip(String tiles) {
+    }
+
+    private void doConnect(String connectadress) {
+    }
+
+    private void doOpen(){
+    }
+
+    private void doExit(){
+        this.outStream.println("Bye " + playerName);
+        System.exit(0);
+    }
+
+    /************************************************************************************************************
+     ***                                        OPTICS Implementation                                         ***
+     ***********************************************************************************************************/
     public void printInstructions(){
         StringBuilder m = new StringBuilder();
         m.append("\n");
@@ -68,29 +154,4 @@ public class MemoryGui{
         this.outStream.println(m.toString());
     }
 
-    public void doCommandLoop(){
-        boolean again = true;
-
-        while(again){
-            String cmdLineString = null;
-            try{
-
-                /*Read user Input. Kleine Anmerkung: Der Buffered Reader liest aus einem Character-Input-Stream.
-                Er (buffered) sammelt die ankommenden Characters, in diesem Fall am Input-Stream
-                und speichert sie zwischen. Die methode Read Line wartet auf einen Zeilenumbruch und liest dann ein**/
-                cmdLineString = inBufferedReader.readLine();
-
-                if(cmdLineString == null) break;
-
-                //Trim white spaces on input
-                cmdLineString.trim();
-
-                //Jetzt für Aufrufe mit Argumenten:
-                int spaceIndex = cmdLineString.indexOf(" ");
-                spaceIndex = spaceIndex != -1 ? spaceIndex : cmdLineString.length();
-
-            }
-            catch(Exception e){}
-        }
-    }
 }
