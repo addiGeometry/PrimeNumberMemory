@@ -1,30 +1,36 @@
-public class DialogueBuilder {
+public class DesignBuilder {
     private final static String[] PATTERN={
             "\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\",
             " \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__",
             "__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\ "
     };
     private final static int PLINES = 3;
-    private static final int PADDING=5;
-    private final static int LINELENGTH = PATTERN[0].length();
-
-    private final int dialogueLength;
-
+    private static final int PADDING=4;
+    private static final String firstline = PATTERN[0];
+    private final static int LINELENGTH = firstline.length();
 
 
-
-
-    public DialogueBuilder(String inputMessage){
-        dialogueLength = inputMessage.length();
-
-
-
-
+    public DesignBuilder(){
     }
     /************************************************************************************************************
-     ***                                        Pattern-Getter                                                ***
+     ***                                     Getters and Setters                                              ***
      ***********************************************************************************************************/
-    public String printPattern(){
+
+    public int getLinelength() {
+        return LINELENGTH;
+    }
+
+    public String getfirstline() {
+        return firstline;
+    }
+
+
+
+    /************************************************************************************************************
+     ***                                        Pattern-Methods                                               ***
+     ***********************************************************************************************************/
+
+    public String pattern(){
         String pattern;
         StringBuilder pbuilder = new StringBuilder();
         for(int i=0; i<PLINES; i++) {
@@ -35,35 +41,57 @@ public class DialogueBuilder {
         return pattern;
     }
 
-    public String printPatternXtimes(int x){
+    public String patternXtimes(int x){
         String pattern;
         StringBuilder pbuilder = new StringBuilder();
         for(int i=0; i<x; i++){
-            pbuilder.append(this.printPattern());
+            pbuilder.append(this.pattern());
         }
         pattern = pbuilder.toString();
         return pattern;
     }
 
     //Returns single line of the Pattern
-    public String printPatternLine(int x){
+    public String patternLine(int x){
         String pattern = PATTERN[x];
         return pattern;
+    }
+
+    public String returnPaddedMessage(String message) throws MessageOutOfBoundsException{
+        if(message.length() > 70){
+            throw new MessageOutOfBoundsException("your message was too long for a line");
+        }
+
+        StringBuilder pm = new StringBuilder();
+        int newPadding = (LINELENGTH - message.length()) / 2;
+        String spacePadding="";
+
+        //String.format is confusing me
+        for(int q=0; q<newPadding; q++){
+            pm.append(" ");
+        }
+        //pm.append(String.format("%1" + newPadding + "s", spacePadding).replace(" ","0"));
+        pm.append(message);
+        for(int q=0; q<newPadding; q++){
+            pm.append(" ");
+        }
+        return pm.toString();
     }
 
     public String welcomeMessage(String message) throws ArrayIndexOutOfBoundsException{
         String pattern;
         StringBuilder pbuilder = new StringBuilder();
-        pbuilder.append(this.printPatternLine(0));
+        pbuilder.append(this.patternLine(0));
         pbuilder.append("\n");
 
         //Edit the message in
-        String rightpad = String.format("%-" + PADDING + "s", message);
-        String leftanrightpad = String.format("%" + PADDING + "s", message);
-
+        String rightpad = String.format("%-1" + PADDING + "s", message).replace(" ", "0");
+        String leftanrightpad = String.format("%1" + PADDING + "s", rightpad).replace(" ", "0");
+        System.out.println(rightpad);
+        System.out.println(leftanrightpad);
 
         //ATTENTION this only works for Strings shorter than LINELENGHT!!
-        int corners = (LINELENGTH - leftanrightpad.length()) / 2;
+        /* int corners = (LINELENGTH - leftanrightpad.length()) / 2;
         String ledge = PATTERN[1].substring(0, corners);
         String redge = PATTERN[1].substring(corners, 0);
 
@@ -71,7 +99,7 @@ public class DialogueBuilder {
         pbuilder.append("\n");
 
         pbuilder.append(this.printPatternLine(2));
-        pbuilder.append("\n");
+        pbuilder.append("\n"); **/
 
         pattern = pbuilder.toString();
         return pattern;

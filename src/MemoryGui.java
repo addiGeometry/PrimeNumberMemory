@@ -5,8 +5,9 @@ public class MemoryGui{
     private static final String EXIT = "exit";
     private static final String CONNECT = "connect";
     private static final String OPEN = "open";
-    private static final String PRINT = "print";
+    private static final String PRINT_BOARD = "print board";
     private static final String FLIP = "flip";
+    private static final String RULES = "rules";
 
     //Stream Logic
     private final PrintStream outStream;
@@ -16,39 +17,15 @@ public class MemoryGui{
     private final String playerName;
 
     //Pattern
-    private static String dialoguePattern;
+    private DesignBuilder designer;
 
-    //private String partnerName;
-    public static void main(String args[]){
-        StringBuilder wstring = new StringBuilder();
-        wstring.append("\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\");
-        wstring.append("\n");
-
-        System.out.println("Welcome to Prime Number Memory version 1.0");
-
-        if(args.length < 1){
-            System.err.println("there needs to be a player for a game");
-            System.exit(1);
-        }
-
-        System.out.println("Greatings " + args[0]);
-        System.out.println("Enjoy the ride");
-
-        System.out.println("wacthi");
-
-        MemoryGui userCMD = new MemoryGui(args[0],System.out, System.in);
-
-        userCMD.printInstructions();
-        userCMD.doCommandLoop();
-    }
 
     public MemoryGui(String pN, PrintStream out, InputStream in){
         this.playerName = pN;
         this.outStream = out;
         this.inBufferedReader = new BufferedReader(new InputStreamReader(in));
         /* More awesome stuff to come! **/
-
-
+        designer = new DesignBuilder();
     }
 
     public void doCommandLoop(){
@@ -57,7 +34,6 @@ public class MemoryGui{
         while(again){
             String cmdLineString = null;
             try{
-
                 /*Read user Input. Kleine Anmerkung: Der Buffered Reader liest aus einem Character-Input-Stream.
                 Er (buffered) sammelt die ankommenden Characters, in diesem Fall am Input-Stream
                 und speichert sie zwischen. Die methode Read Line wartet auf einen Zeilenumbruch und liest dann ein**/
@@ -93,10 +69,12 @@ public class MemoryGui{
                     case FLIP:
                         this.doFLip(parameterSting);
                         break;
-                    case PRINT:
+                    case PRINT_BOARD:
                         this.doPrint();
                         break;
-
+                    case RULES:
+                        this.doPrintRules();
+                        break;
                     default:
                         this.outStream.println("unknown command:" + cmdLineString);
                         this.printInstructions();
@@ -122,14 +100,18 @@ public class MemoryGui{
     private void doOpen(){
     }
 
+    private void doPrintRules() {
+    this.outStream.println(designer.patternLine(0));
+    this.outStream.println("the rules of the game are quite simple");
+    this.outStream.println(designer.patternLine(2));
+
+    }
+
     private void doExit(){
         this.outStream.println("Bye " + playerName);
         System.exit(0);
     }
 
-    /************************************************************************************************************
-     ***                                        OPTICS Implementation                                         ***
-     ***********************************************************************************************************/
     public void printInstructions(){
         StringBuilder m = new StringBuilder();
         m.append("\n");
@@ -142,16 +124,22 @@ public class MemoryGui{
         m.append(OPEN);
         m.append(".. open port to become tcp server");
         m.append("\n");
-        m.append(PRINT);
+        m.append(PRINT_BOARD);
         m.append(".. print game table");
         m.append("\n");
         m.append(FLIP);
         m.append(".. flip two cards");
+        m.append("\n");
+        m.append(RULES);
+        m.append(".. print the rules of the game");
         m.append("\n");
         m.append(EXIT);
         m.append(".. exit");
 
         this.outStream.println(m.toString());
     }
-
 }
+
+/************************************************************************************************************
+ ***                                        OPTICS Implementation                                         ***
+ ***********************************************************************************************************/
