@@ -8,6 +8,10 @@ public class MemoryGui{
     private static final String PRINT_BOARD = "print board";
     private static final String FLIP = "flip";
     private static final String RULES = "rules";
+    private static final String SURRENDER = "surrender";
+
+
+
 
     //Stream Logic
     private final PrintStream outStream;
@@ -20,7 +24,7 @@ public class MemoryGui{
     private DesignBuilder designer;
 
 
-    public MemoryGui(String pN, PrintStream out, InputStream in){
+    public MemoryGui(String pN, InputStream in, PrintStream out){
         this.playerName = pN;
         this.outStream = out;
         this.inBufferedReader = new BufferedReader(new InputStreamReader(in));
@@ -75,6 +79,9 @@ public class MemoryGui{
                     case RULES:
                         this.doPrintRules();
                         break;
+                    case SURRENDER:
+                        this.doSurrender();
+                        break;
                     default:
                         this.outStream.println("unknown command:" + cmdLineString);
                         this.printInstructions();
@@ -84,6 +91,8 @@ public class MemoryGui{
             catch(Exception e){}
         }
     }
+
+
 
     /************************************************************************************************************
      ***                                            UI Implementation                                         ***
@@ -99,7 +108,8 @@ public class MemoryGui{
 
     private void doOpen(){
     }
-
+    private void doSurrender() {
+    }
     private void doPrintRules() {
     this.outStream.println(designer.patternLine(0));
     this.outStream.println("the rules of the game are quite simple");
@@ -118,6 +128,9 @@ public class MemoryGui{
         m.append("\n");
         m.append("valid commands: ");
         m.append("\n");
+        m.append(RULES);
+        m.append(".. print the rules of the game");
+        m.append("\n");
         m.append(CONNECT);
         m.append(".. connect as tcp client");
         m.append("\n");
@@ -130,8 +143,8 @@ public class MemoryGui{
         m.append(FLIP);
         m.append(".. flip two cards");
         m.append("\n");
-        m.append(RULES);
-        m.append(".. print the rules of the game");
+        m.append(SURRENDER);
+        m.append(".. also an honorable way to finish your game");
         m.append("\n");
         m.append(EXIT);
         m.append(".. exit");

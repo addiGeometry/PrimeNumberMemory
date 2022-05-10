@@ -1,3 +1,5 @@
+import Exceptions.MessageOutOfBoundsException;
+
 public class DesignBuilder {
     private final static String[] PATTERN={
             "\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\__\\  \\",
@@ -6,9 +8,11 @@ public class DesignBuilder {
     };
     private final static int PLINES = 3;
     private static final int PADDING=4;
+    private static final int MARGIN=4;
     private static final String firstline = PATTERN[0];
     private final static int LINELENGTH = firstline.length();
 
+    private final static int MESSAGEBOX = LINELENGTH - 2 * PADDING - 2 * MARGIN;
 
     public DesignBuilder(){
     }
@@ -30,6 +34,7 @@ public class DesignBuilder {
      ***                                        Pattern-Methods                                               ***
      ***********************************************************************************************************/
 
+    //Gebe das Muster auf dem das Design beruht aus
     public String pattern(){
         String pattern;
         StringBuilder pbuilder = new StringBuilder();
@@ -41,30 +46,36 @@ public class DesignBuilder {
         return pattern;
     }
 
+    //Gebe einen String bestehend aus X-mal dem Muster aus
     public String patternXtimes(int x){
-        String pattern;
+        String multipattern;
         StringBuilder pbuilder = new StringBuilder();
         for(int i=0; i<x; i++){
             pbuilder.append(this.pattern());
         }
-        pattern = pbuilder.toString();
-        return pattern;
+        multipattern = pbuilder.toString();
+        return multipattern;
     }
 
-    //Returns single line of the Pattern
+    //Gibt die X-te Linie des Musters aus
     public String patternLine(int x){
         String pattern = PATTERN[x];
         return pattern;
     }
 
-    public String returnPaddedMessage(String message) throws MessageOutOfBoundsException{
-        if(message.length() > 70){
-            throw new MessageOutOfBoundsException("your message was too long for a line");
-        }
+    public String borderIterator(int i){
+        //I immer mindestens 1
+        if(i%3 == 0)    return this.patternLine(2);
+        if(i%2 == 0)    return this.patternLine(1);
+        return this.patternLine(0);
+    }
+
+
+    //Gebe eine Nachricht mit
+    public String returnPaddedMessage(String message) {
 
         StringBuilder pm = new StringBuilder();
-        int newPadding = (LINELENGTH - message.length()) / 2;
-        String spacePadding="";
+        int newPadding = (MESSAGEBOX - message.length()) / 2;
 
         //String.format is confusing me
         for(int q=0; q<newPadding; q++){
@@ -76,6 +87,50 @@ public class DesignBuilder {
             pm.append(" ");
         }
         return pm.toString();
+    }
+
+    public String appendLeftBorder(int line) {
+        StringBuilder border = new StringBuilder();
+        border.append(borderIterator(line).substring(0,MARGIN-1));
+        for(int i=0; i<PADDING; i++){border.append(" ");}
+        return border.toString();
+    }
+
+    public String appendRightBorder(int line) {
+        StringBuilder border = new StringBuilder();
+        for(int i=0; i<PADDING; i++){border.append(" ");}
+        border.append(borderIterator(line).substring(LINELENGTH-MARGIN-1,LINELENGTH-1));
+        return border.toString();
+    }
+
+    public String returnBorderedMessage(String message){
+        StringBuilder submessagebuilder = new StringBuilder();
+        submessagebuilder.append(this.patternLine(0));
+        submessagebuilder.append("\n");
+
+        int mlength = message.length();
+        int current = 0;
+        int borderIterator=1;
+
+
+        //LINELENGTH - PADDING - MARGIN = 54
+        while(mlength > MESSAGEBOX){
+            borderIterator++;
+            submessagebuilder.append(this.appendLeftBorder(borderIterator));
+            submessagebuilder.append(this.returnPaddedMessage(message.substring(current, current + MESSAGEBOX-1)));
+            submessagebuilder.append(this.appendRightBorder(borderIterator));
+            submessagebuilder.append("\n");
+            current += 54;
+            mlength -= 54;
+
+        }
+        borderIterator++;
+        submessagebuilder.append(this.appendLeftBorder(borderIterator));
+        submessagebuilder.append(this.returnPaddedMessage(message.substring(current, message.length()-1)));
+        submessagebuilder.append(this.appendRightBorder(borderIterator));
+        submessagebuilder.append("\n");
+        submessagebuilder.append(this.borderIterator(borderIterator));
+        return submessagebuilder.toString();
     }
 
     public String welcomeMessage(String message) throws ArrayIndexOutOfBoundsException{
