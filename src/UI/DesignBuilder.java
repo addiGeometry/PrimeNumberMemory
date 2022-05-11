@@ -1,3 +1,5 @@
+package UI;
+
 import Exceptions.MessageOutOfBoundsException;
 
 public class DesignBuilder {

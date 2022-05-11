@@ -1,3 +1,5 @@
+package UI;
+
 import java.io.*;
 
 public class MemoryGui{

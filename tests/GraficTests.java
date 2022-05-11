@@ -1,4 +1,6 @@
 import Exceptions.MessageOutOfBoundsException;
+import UI.DesignBuilder;
+import UI.MemoryGui;
 import org.junit.Test;
 
 public class GraficTests {

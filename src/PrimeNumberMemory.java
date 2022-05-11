@@ -1,3 +1,5 @@
+import UI.MemoryGui;
+
 public class PrimeNumberMemory {
     public static void main(String args[]){
         System.out.println("Welcome to Prime Number Memory version 1.0");
