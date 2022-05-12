@@ -23,7 +23,7 @@ public class MemoryGui{
     private final String playerName;
 
     //Pattern
-    private DesignBuilder designer;
+    private DesignBuilderImplementation designer;
 
 
     public MemoryGui(String pN, InputStream in, PrintStream out){
@@ -31,7 +31,7 @@ public class MemoryGui{
         this.outStream = out;
         this.inBufferedReader = new BufferedReader(new InputStreamReader(in));
         /* More awesome stuff to come! **/
-        designer = new DesignBuilder();
+        designer = new DesignBuilderImplementation();
     }
 
     public void doCommandLoop(){
@@ -113,9 +113,9 @@ public class MemoryGui{
     private void doSurrender() {
     }
     private void doPrintRules() {
-    this.outStream.println(designer.patternLine(0));
+    //this.outStream.println(designer.patternLine(0));
     this.outStream.println("the rules of the game are quite simple");
-    this.outStream.println(designer.patternLine(2));
+    //this.outStream.println(designer.patternLine(2));
 
     }
 

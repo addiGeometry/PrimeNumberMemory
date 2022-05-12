@@ -1,8 +1,6 @@
 package API;
-
 import Entities.Card;
-import Exceptions.BadParameterException;
-import Exceptions.NotYourTurnException;
+
 
 public interface MemoryAPI {
     //game interactions
