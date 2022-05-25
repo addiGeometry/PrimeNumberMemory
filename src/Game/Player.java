@@ -1,4 +1,5 @@
 package Game;
 
-public class Player {
+enum Player{
+    P1,P2
 }
