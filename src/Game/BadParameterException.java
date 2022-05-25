@@ -1,4 +1,4 @@
-package API;
+package Game;
 
 public class BadParameterException extends Exception{
     BadParameterException(String message){

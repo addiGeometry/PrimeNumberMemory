@@ -1,4 +1,4 @@
-package API;
+package Game;
 
 public class NotYourTurnException extends Exception{
     NotYourTurnException(String message){

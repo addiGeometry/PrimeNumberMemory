@@ -1,6 +1,6 @@
-package UI;
+package Grafics;
 
-public interface DesignBuilder{
+interface DesignBuilder{
     /**
      *
      * @param input : String (Nachricht oder das Spielfeld), der von einem Rahmen umrandet werden soll

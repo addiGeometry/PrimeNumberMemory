@@ -1,4 +1,4 @@
-package UI;
+package Grafics;
 
 public class DesignBuilderImplementation implements DesignBuilder{
     //Das Muster aus dem der Rahmen generiert wird

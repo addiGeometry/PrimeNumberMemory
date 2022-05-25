@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/PrimeNumberGeometry.iml" filepath="$PROJECT_DIR$/PrimeNumberGeometry.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PrimeNumberMemory.iml" filepath="$PROJECT_DIR$/PrimeNumberMemory.iml" />
     </modules>
   </component>
 </project>
