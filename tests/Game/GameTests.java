@@ -5,19 +5,34 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class GameTests{
+
+    //Namen von zwei lokalen Testspielern
     private static final String ALICE = "Alice";
     private static final String BOB = "Bob";
 
+    //Zwei Test Testspieler der Typen P1 und P2. Ein Spiel kann nur gleichzeitig zwei Spieler haben.
     private static final Player player1 = Player.P1;
     private static final Player player2 = Player.P2;
 
+    //Erzeuge ein Paar (zwei Karten, eine Zahl) und die restlichen Dummy-Karten (viele Karten eine Zahl)
+    Card testCard = new CardImplementation(2);
+    Card dummy = new CardImplementation(4); //Dummy-Karte 4 ist keine Primzahl
+
+
+    //Mische die Karten und Teile sie verdeckt aus. (Generiere eine zufällige Anordnung der ersten 18-Primzahlen für ein 6x6 Feld)
+    BoardGenerator boardGenerator = new BoardGeneratorImplementation();
+    Card[][] testfeld = boardGenerator.generateBoard6x6();
+
+    //Erstelle das Standard Memory-Brett
     private Memory getMemory(){
         return new Memory();
     }
 
+    //Erzeuge die Entwicklervariante des Memories mit extra Set- und Get-Methoden
     private DevMemory getDevMemory(){
         return new DevMemory();
     }
+
 
     /**
      *
@@ -29,9 +44,9 @@ public class GameTests{
      *
      */
 
-    // Teste ob die Anzahl der gefunden Paare eines Spielers sich erhöht
+    // Teste, ob die Anzahl der gefundenen Paare eines Spielers sich erhöht
     @Test
-    public void TesteSpielerScore() throws NotYourTurnException, GameException{
+    public void TesteSpielerScore() throws NotYourTurnException, BothCardsGoneException, OneCardGoneException {
         /**     Szenario: A1,A2 sind beide "2" und werden von Alice aufgedeckt. Paaranzahl von Alice erhöht sich
          *           1   2   3   4   5   6
          *      A   [2] [2] [/] [/] [/] [/]
@@ -67,8 +82,8 @@ public class GameTests{
     }
 
 
-    @Test (expected = GameException.class)
-    public void DeckeKartenAufDieSchonWegSind() throws GameException, NotYourTurnException {
+    @Test (expected = BothCardsGoneException.class)
+    public void DeckeKartenAufDieSchonWegSind() throws BothCardsGoneException, OneCardGoneException, NotYourTurnException {
 
         /**     Szenario: A1,A2 fehlen - GameException soll geworfen werden weil
          *           1   2   3   4   5   6
@@ -105,7 +120,7 @@ public class GameTests{
     }
 
     @Test (expected = NotYourTurnException.class)
-    public void SpielerIstNichtDran() throws NotYourTurnException, GameException{
+    public void SpielerIstNichtDran() throws NotYourTurnException, BothCardsGoneException, OneCardGoneException {
         /**     Szenario: Player1 Alice meldet sich zuerst an und darf somit beginnen, aber Bob beginnt hier
          *           1   2   3   4   5   6
          *      A   [/] [/] [/] [/] [/] [/]

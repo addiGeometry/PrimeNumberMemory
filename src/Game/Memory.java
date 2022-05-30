@@ -3,7 +3,7 @@ package Game;
 public class Memory implements MemoryAPI, GameEngine{
 
     @Override
-    public boolean flip(Player player, Position x, Position y) throws NotYourTurnException, GameException {
+    public boolean flip(Player player, Position x, Position y) throws NotYourTurnException, OneCardGoneException, BothCardsGoneException {
         return false;
     }
 
@@ -44,7 +44,6 @@ public class Memory implements MemoryAPI, GameEngine{
 
     @Override
     public void surrender(Player player) {
-
     }
 
     @Override
