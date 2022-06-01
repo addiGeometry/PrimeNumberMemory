@@ -1,8 +1,5 @@
 package Grafics;
 
-import Game.Position;
-import Grafics.DesignBuilder;
-import Grafics.DesignBuilderImplementation;
 import org.junit.Test;
 
 public class GraficTests {

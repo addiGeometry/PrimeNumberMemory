@@ -1,13 +1,7 @@
 package Game;
 
-public interface GameEngine extends MemoryAPI{
+public interface GameEngine{
     boolean startGame(Player player1, Player player2);
-
-    /**
-     * @param name Name des Spielers
-     * @param player Spieler P1 oder P2
-     */
-    void assignPlayer(String name, Player player);
 
     /**
      * @return Spiel Status

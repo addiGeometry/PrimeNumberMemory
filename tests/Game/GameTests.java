@@ -6,48 +6,54 @@ import org.junit.Test;
 
 public class GameTests{
 
-    //Namen von zwei lokalen Testspielern
+    /************************************************************************************************************
+     ***                                            Test-Umgebung:                                            ***
+     ***********************************************************************************************************/
+
+    //Zwei lokale Testspieler
     private static final String ALICE = "Alice";
     private static final String BOB = "Bob";
 
-    //Zwei Test Testspieler der Typen P1 und P2. Ein Spiel kann nur gleichzeitig zwei Spieler haben.
-    private static final Player player1 = Player.P1;
-    private static final Player player2 = Player.P2;
+    //Ein Spiel kann nur gleichzeitig zwei Spieler haben.
+    private static final Player PLAYER_1 = Player.P1;
+    private static final Player PLAYER_2 = Player.P2;
 
-    //Erzeuge ein Paar (zwei Karten, eine Zahl) und die restlichen Dummy-Karten (viele Karten eine Zahl)
+    //Erzeuge zwei Kartenschablonen für Tests
     Card testCard = new CardImplementation(2);
     Card dummy = new CardImplementation(4); //Dummy-Karte 4 ist keine Primzahl
 
-
-    //Mische die Karten und Teile sie verdeckt aus. (Generiere eine zufällige Anordnung der ersten 18-Primzahlen für ein 6x6 Feld)
+    //Der BoardGenerator generiert ein zufälliges Memory-Feld aus der Zahlenmenge. Bildlich gesehen mischt er die Karten und teilt Sie aus
     BoardGenerator boardGenerator = new BoardGeneratorImplementation();
-    Card[][] testfeld = boardGenerator.generateBoard6x6();
 
     //Erstelle das Standard Memory-Brett
     private Memory getMemory(){
-        return new Memory();
+        return new Memory(boardGenerator, PLAYER_1, PLAYER_2);
     }
 
-    //Erzeuge die Entwicklervariante des Memories mit extra Set- und Get-Methoden
-    private DevMemory getDevMemory(){
-        return new DevMemory();
+    //Erzeuge die Entwicklervariante des Memories mit Hintertür
+    //@param devBoardGenerator
+    private DevMemory getDevMemory(DevBoardGenerator devBoardGenerator){
+        return new DevMemory(boardGenerator, devBoardGenerator, PLAYER_1, PLAYER_2);
     }
 
+    /************************************************************************************************************
+     ***                                              Tests                                                   ***
+     ***********************************************************************************************************/
 
     /**
      *
      * Notation:
      *
      *      [/] = Verdeckte, aktive Karte
-     *      [p] = Aufgedeckte, aktive Karte mit Primzahn p
-     *       x  = Inaktive Karte (Vom Feld)
+     *      [p] = Aufgedeckte, aktive Karte mit Primzahl p
+     *       x  = Karte ist nicht im Spiel (inaktiv)
      *
      */
 
-    // Teste, ob die Anzahl der gefundenen Paare eines Spielers sich erhöht
     @Test
-    public void TesteSpielerScore() throws NotYourTurnException, BothCardsGoneException, OneCardGoneException {
+    public void TesteSpielerScore() throws NotYourTurnException, CardsGoneException{
         /**     Szenario: A1,A2 sind beide "2" und werden von Alice aufgedeckt. Paaranzahl von Alice erhöht sich
+         *
          *           1   2   3   4   5   6
          *      A   [2] [2] [/] [/] [/] [/]
          *      B   [/] [/] [/] [/] [/] [/]
@@ -56,36 +62,29 @@ public class GameTests{
          *      E   [/] [/] [/] [/] [/] [/]
          *      F   [/] [/] [/] [/] [/] [/]
          * */
-        Card dummy2 = new CardImplementation(2);
-        Card dummyBlanko = new CardImplementation(7);
 
         Card[][] testFeld = new Card[][] {
-                {dummy2,dummy2,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko},
-                {dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko},
-                {dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko},
-                {dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko},
-                {dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko},
-                {dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko}
+                {testCard,testCard,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy}
         };
 
-        Position a1 = Position.A1;
-        Position a2 = Position.A2;
+        DevBoardGenerator devBoardGenerator = new DevBoardGeneratorImpl(testFeld);
+        DevMemory devMemory = getDevMemory(devBoardGenerator);
 
-        DevGameEngine game = getDevMemory();
-        game.setBoard(testFeld);
+        devMemory.flip(PLAYER_1, Coordinate.A1, Coordinate.A2);
 
-        game.assignPlayer(ALICE, player1);
-        game.assignPlayer(BOB, player2);
-        game.flip(player1, a1, a2);
-
-        Assert.assertEquals(1, game.hasScore(player1));
+        Assert.assertEquals(1, devMemory.hasScore(PLAYER_1));
     }
 
 
-    @Test (expected = BothCardsGoneException.class)
-    public void DeckeKartenAufDieSchonWegSind() throws BothCardsGoneException, OneCardGoneException, NotYourTurnException {
-
+    @Test (expected = CardsGoneException.class)
+    public void DeckeKartenAufDieSchonWegSind() throws CardsGoneException, NotYourTurnException {
         /**     Szenario: A1,A2 fehlen - GameException soll geworfen werden weil
+         *
          *           1   2   3   4   5   6
          *      A    x   x  [/] [/] [/] [/]
          *      B   [/] [/] [/] [/] [/] [/]
@@ -95,33 +94,28 @@ public class GameTests{
          *      F   [/] [/] [/] [/] [/] [/]
          * */
         Card nulldummy = null;
-        Card dummyBlanko = new CardImplementation(7);
-
         Card[][] testFeld = new Card[][] {
-                {nulldummy,nulldummy,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko},
-                {dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko},
-                {dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko},
-                {dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko},
-                {dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko},
-                {dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko}
+                {nulldummy,nulldummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy}
         };
 
-        Position a1 = Position.A1;
-        Position a2 = Position.A2;
-
-        DevGameEngine game = getDevMemory();
-        game.setBoard(testFeld);
-
-        game.assignPlayer(ALICE, player1);
-        game.assignPlayer(BOB, player2);
+        DevBoardGenerator devBoardGen = new DevBoardGeneratorImpl(testFeld);
+        DevMemory devMemory = getDevMemory(devBoardGen);
 
         //GameException !
-        game.flip(player1, a1, a2);
+        devMemory.flip(PLAYER_1, Coordinate.A1, Coordinate.A2);
     }
 
+
     @Test (expected = NotYourTurnException.class)
-    public void SpielerIstNichtDran() throws NotYourTurnException, BothCardsGoneException, OneCardGoneException {
-        /**     Szenario: Player1 Alice meldet sich zuerst an und darf somit beginnen, aber Bob beginnt hier
+    public void SpielerIstNichtDran() throws NotYourTurnException, CardsGoneException{
+        /**     Szenario: PLAYER_1 ist für alle Tests Alice. Hier entsteht ein neues (manipuliertes) Spiel
+         *      und noch niemand hat gezogen. Deshalb ist eigentlich Alice dran, aber Bob versucht zu ziehen.
+         *
          *           1   2   3   4   5   6
          *      A   [/] [/] [/] [/] [/] [/]
          *      B   [/] [/] [/] [/] [/] [/]
@@ -130,19 +124,18 @@ public class GameTests{
          *      E   [/] [/] [/] [/] [/] [/]
          *      F   [/] [/] [/] [/] [/] [/]
          * */
-        Position a1 = Position.A1;
-        Position a2 = Position.A2;
-
-        GameEngine game = getMemory();
-        game.assignPlayer(ALICE, player1);
-        game.assignPlayer(BOB, player2);
+        Memory memory = getMemory();
 
         //NotYourTurnException
-        game.flip(player2, a1, a2);
+        memory.flip(PLAYER_2,Coordinate.A1, Coordinate.A2);
     }
+
+    //TODO Spieler versucht zwei mal die gleiche Karte zu Flippen test
 
     public void SpielerGibtAuf() throws NotYourTurnException, GameException{
         /**     Szenario: Bob gibt auf, weil er keine Chancen mehr sieht zu gewinnen
+         *      ⇨ Somit hat PLAYER_2 Alice
+         *
          *           1   2   3   4   5   6
          *      A   [/] [/] [/] [/] [/] [/]
          *      B   [/] [/] [/] [/] [/] [/]
@@ -151,20 +144,15 @@ public class GameTests{
          *      E   [/] [/] [/] [/] [/] [/]
          *      F   [/] [/] [/] [/] [/] [/]
          * */
+        Memory memory = getMemory();
 
-        Position a1 = Position.A1;
-        Position a2 = Position.A2;
+        memory.surrender(PLAYER_2);
 
-        DevGameEngine game = getDevMemory();
-
-        game.assignPlayer(ALICE, player1);
-        game.assignPlayer(BOB, player2);
-
-        game.surrender(player2);
-        Assert.assertEquals(true,game.hasLost(player2));
+        Assert.assertEquals(true,memory.isWinner(PLAYER_1));
     }
 
-    public void SpielerGewinnt() throws NotYourTurnException, GameException{
+    @Test
+    public void spielerGewinnt() throws NotYourTurnException, CardsGoneException{
         /**     Szenario: Alice gewinnt (Im ersten Zug weil das Feld manipuliert worden ist)
          *           1   2   3   4   5   6
          *      A    x   x   x   x   x   x
@@ -175,30 +163,56 @@ public class GameTests{
          *      F    x   x   x   x   x   x
          * */
 
-        Card dummy2 = new CardImplementation(2);
-        Card dummyBlanko = new CardImplementation(7);
 
         Card[][] testFeld = new Card[][] {
-                {dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko},
-                {dummyBlanko,dummy2,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko},
-                {dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko},
-                {dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko},
-                {dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko,dummyBlanko},
-                {dummyBlanko,dummyBlanko,dummyBlanko,dummy2,dummyBlanko,dummyBlanko}
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,testCard,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,testCard,dummy,dummy}
         };
 
-        Position b2 = Position.B2;
-        Position e4 = Position.E4;
+        DevBoardGenerator devBoardGen = new DevBoardGeneratorImpl(testFeld);
+        DevMemory devMemory = getDevMemory(devBoardGen);
 
-        DevGameEngine game = getDevMemory();
-        game.setBoard(testFeld);
-        game.assignPlayer(ALICE, player1);
-        game.assignPlayer(BOB, player2);
+        devMemory.flip(PLAYER_1, Coordinate.B2, Coordinate.E4);
 
-        game.flip(player1, b2, e4);
-
-        Assert.assertEquals(true,game.hasWon(player2));
+        Assert.assertEquals(true,devMemory.isWinner(PLAYER_2));
     }
 
+    @Test
+    public void testeUntentschieden() throws NotYourTurnException, CardsGoneException{
+        /**     Szenario: Alice nimmt die letzten zwei Karten und verursacht
+         *      ein Unentschieden, weil danach Punktegleichstand herrscht.
+         *
+         *           1   2   3   4   5   6
+         *      A    x   x   x   x   x   x
+         *      B    x  [2]  x   x   x   x
+         *      C    x   x   x   x   x   x
+         *      D    x   x   x   x   x   x
+         *      E    x   x   x  [2]  x   x
+         *      F    x   x   x   x   x   x
+         * */
+
+        Card[][] testFeld = new Card[][] {
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,testCard,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,testCard,dummy,dummy}
+        };
+
+        DevBoardGenerator devBoardGen = new DevBoardGeneratorImpl(testFeld);
+        DevMemory devMemory = getDevMemory(devBoardGen);
+
+        devMemory.setPunkteStand(PLAYER_1, 0);
+        devMemory.setPunkteStand(PLAYER_2, 1);
+
+        devMemory.flip(PLAYER_1, Coordinate.B2, Coordinate.E4);
+
+        Assert.assertEquals(true,devMemory.isDraw());
+    }
 
 }

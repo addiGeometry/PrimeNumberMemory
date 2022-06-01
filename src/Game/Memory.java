@@ -1,44 +1,21 @@
 package Game;
 
-public class Memory implements MemoryAPI, GameEngine{
+public class Memory implements MemoryAPI{
 
-    @Override
-    public boolean flip(Player player, Position x, Position y) throws NotYourTurnException, OneCardGoneException, BothCardsGoneException {
-        return false;
+    private final Board board;
+    private final GameEngine game;
+    private final Player firstPlayer, secondPlayer;
+
+    public Memory(BoardGenerator boardGen, Player p1, Player p2){
+        
+        board = new BoardImplementation(boardGen.generateBoard6x6());
+        game = new GameEngineImplementation(p1,p2);
+        firstPlayer = p1;
+        secondPlayer = p2;
     }
 
     @Override
-    public boolean startGame(Player player1, Player player2) {
-        return false;
-    }
-
-    @Override
-    public void assignPlayer(String name, Player player) {
-
-    }
-
-    @Override
-    public Status getStatus() {
-        return null;
-    }
-
-    @Override
-    public boolean isActive() {
-        return false;
-    }
-
-    @Override
-    public int hasScore(Player player) {
-        return 0;
-    }
-
-    @Override
-    public boolean hasWon(Player player) {
-        return false;
-    }
-
-    @Override
-    public boolean hasLost(Player player) {
+    public boolean flip(Player player, Coordinate firstCard, Coordinate secondCard) throws NotYourTurnException, CardsGoneException {
         return false;
     }
 
@@ -50,4 +27,19 @@ public class Memory implements MemoryAPI, GameEngine{
     public Card[][] getBoard() {
         return new Card[0][];
     }
+
+    public int hasScore(Player player) {
+        return 0;
+    }
+
+    @Override
+    public boolean isWinner(Player p1) {
+        return false;
+    }
+
+    @Override
+    public boolean isDraw() {
+        return false;
+    }
+
 }
