@@ -2,7 +2,8 @@ package Game;
 
 enum Status{
     START,
-    Turn_P1,
-    Turn_p2,
+    P1_Turn,
+    P2_Turn,
+    TwoCardsFlipped,
     ENDED,
 }

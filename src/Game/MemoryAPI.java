@@ -10,7 +10,7 @@ public interface MemoryAPI {
      * @throws NotYourTurnException Der Spieler war nicht am Zug
      * @throws GameException Die Karten sind schon vom Feld
      */
-    boolean flip(Player player, Coordinate firstCard, Coordinate secondCard) throws NotYourTurnException, CardsGoneException;
+    boolean flip(Player player, Coordinate firstCard, Coordinate secondCard) throws NotYourTurnException, CardsGoneException, DoublePickException;
 
     /**
      * @param player Der Spieler der aufgibt

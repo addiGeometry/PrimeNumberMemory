@@ -30,5 +30,7 @@ public interface GameEngine{
      */
     boolean hasLost(Player player);
 
+    boolean surrender();
+
     // void subscribeChangeListener(LocalBoardChangeListener changeListener); TODO
 }

@@ -5,11 +5,11 @@ public class DevMemory extends Memory implements DevMemoryAPI{
     private Card[][] devBoard;
 
     public DevMemory(BoardGenerator classicGen,DevBoardGenerator devBoardGenerator, Player p1, Player p2){
-        super(classicGen, p1, p2);
+        super(p1, p2, );
     }
 
     @Override
-    public boolean flip(Player player, Coordinate firstCard, Coordinate secondCard) throws NotYourTurnException, CardsGoneException {
+    public boolean flip(Player player, Coordinate firstCard, Coordinate secondCard) throws NotYourTurnException, CardsGoneException, DoublePickException {
         return false;
     }
 

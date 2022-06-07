@@ -27,7 +27,7 @@ public class GameTests{
 
     //Erstelle das Standard Memory-Brett
     private Memory getMemory(){
-        return new Memory(boardGenerator, PLAYER_1, PLAYER_2);
+        return new Memory(PLAYER_1, PLAYER_2, "Alice");
     }
 
     //Erzeuge die Entwicklervariante des Memories mit Hintertür
@@ -49,9 +49,44 @@ public class GameTests{
      *       x  = Karte ist nicht im Spiel (inaktiv)
      *
      */
+    @Test
+    public void karteWirdWeggenommen() throws NotYourTurnException, CardsGoneException, DoublePickException{
+            /**     Szenario: A1,A2 sind beide "2" und werden von Alice aufgedeckt. Die Karten verschwinden von dem
+             *      Spielbrett.
+             *
+             *           1   2   3   4   5   6
+             *      A   [2] [2] [/] [/] [/] [/]
+             *      B   [/] [/] [/] [/] [/] [/]
+             *      C   [/] [/] [/] [/] [/] [/]
+             *      D   [/] [/] [/] [/] [/] [/]
+             *      E   [/] [/] [/] [/] [/] [/]
+             *      F   [/] [/] [/] [/] [/] [/]
+             * */
+            boolean aufDemFeld = true;
+
+            Card[][] testFeld = new Card[][] {
+                    {testCard,testCard,dummy,dummy,dummy,dummy},
+                    {dummy,dummy,dummy,dummy,dummy,dummy},
+                    {dummy,dummy,dummy,dummy,dummy,dummy},
+                    {dummy,dummy,dummy,dummy,dummy,dummy},
+                    {dummy,dummy,dummy,dummy,dummy,dummy},
+                    {dummy,dummy,dummy,dummy,dummy,dummy}
+            };
+
+            DevBoardGenerator devBoardGenerator = new DevBoardGeneratorImpl(testFeld);
+            DevMemory devMemory = getDevMemory(devBoardGenerator);
+
+            Assert.assertEquals(testCard, testFeld[0][0]);
+            Assert.assertEquals(testCard, testFeld[0][1]);
+
+            devMemory.flip(PLAYER_1, Coordinate.A1, Coordinate.A2);
+
+            Assert.assertEquals(null, testFeld[0][0]);
+            Assert.assertEquals(null, testFeld[0][1]);
+    }
 
     @Test
-    public void TesteSpielerScore() throws NotYourTurnException, CardsGoneException{
+    public void TesteSpielerScore() throws NotYourTurnException, CardsGoneException, DoublePickException{
         /**     Szenario: A1,A2 sind beide "2" und werden von Alice aufgedeckt. Paaranzahl von Alice erhöht sich
          *
          *           1   2   3   4   5   6
@@ -72,69 +107,20 @@ public class GameTests{
                 {dummy,dummy,dummy,dummy,dummy,dummy}
         };
 
+        int expcetedScore = 1;
+
         DevBoardGenerator devBoardGenerator = new DevBoardGeneratorImpl(testFeld);
         DevMemory devMemory = getDevMemory(devBoardGenerator);
 
         devMemory.flip(PLAYER_1, Coordinate.A1, Coordinate.A2);
 
-        Assert.assertEquals(1, devMemory.hasScore(PLAYER_1));
+        Assert.assertEquals(expcetedScore, devMemory.hasScore(PLAYER_1));
     }
 
-
-    @Test (expected = CardsGoneException.class)
-    public void DeckeKartenAufDieSchonWegSind() throws CardsGoneException, NotYourTurnException {
-        /**     Szenario: A1,A2 fehlen - GameException soll geworfen werden weil
-         *
-         *           1   2   3   4   5   6
-         *      A    x   x  [/] [/] [/] [/]
-         *      B   [/] [/] [/] [/] [/] [/]
-         *      C   [/] [/] [/] [/] [/] [/]
-         *      D   [/] [/] [/] [/] [/] [/]
-         *      E   [/] [/] [/] [/] [/] [/]
-         *      F   [/] [/] [/] [/] [/] [/]
-         * */
-        Card nulldummy = null;
-        Card[][] testFeld = new Card[][] {
-                {nulldummy,nulldummy,dummy,dummy,dummy,dummy},
-                {dummy,dummy,dummy,dummy,dummy,dummy},
-                {dummy,dummy,dummy,dummy,dummy,dummy},
-                {dummy,dummy,dummy,dummy,dummy,dummy},
-                {dummy,dummy,dummy,dummy,dummy,dummy},
-                {dummy,dummy,dummy,dummy,dummy,dummy}
-        };
-
-        DevBoardGenerator devBoardGen = new DevBoardGeneratorImpl(testFeld);
-        DevMemory devMemory = getDevMemory(devBoardGen);
-
-        //GameException !
-        devMemory.flip(PLAYER_1, Coordinate.A1, Coordinate.A2);
-    }
-
-
-    @Test (expected = NotYourTurnException.class)
-    public void SpielerIstNichtDran() throws NotYourTurnException, CardsGoneException{
-        /**     Szenario: PLAYER_1 ist für alle Tests Alice. Hier entsteht ein neues (manipuliertes) Spiel
-         *      und noch niemand hat gezogen. Deshalb ist eigentlich Alice dran, aber Bob versucht zu ziehen.
-         *
-         *           1   2   3   4   5   6
-         *      A   [/] [/] [/] [/] [/] [/]
-         *      B   [/] [/] [/] [/] [/] [/]
-         *      C   [/] [/] [/] [/] [/] [/]
-         *      D   [/] [/] [/] [/] [/] [/]
-         *      E   [/] [/] [/] [/] [/] [/]
-         *      F   [/] [/] [/] [/] [/] [/]
-         * */
-        Memory memory = getMemory();
-
-        //NotYourTurnException
-        memory.flip(PLAYER_2,Coordinate.A1, Coordinate.A2);
-    }
-
-    //TODO Spieler versucht zwei mal die gleiche Karte zu Flippen test
-
-    public void SpielerGibtAuf() throws NotYourTurnException, GameException{
+    @Test
+    public void spielerGibtAuf(){
         /**     Szenario: Bob gibt auf, weil er keine Chancen mehr sieht zu gewinnen
-         *      ⇨ Somit hat PLAYER_2 Alice
+         *      ⇨ Somit hat PLAYER_1, Alice gewonnen
          *
          *           1   2   3   4   5   6
          *      A   [/] [/] [/] [/] [/] [/]
@@ -152,7 +138,7 @@ public class GameTests{
     }
 
     @Test
-    public void spielerGewinnt() throws NotYourTurnException, CardsGoneException{
+    public void spielerGewinnt() throws NotYourTurnException, CardsGoneException, DoublePickException {
         /**     Szenario: Alice gewinnt (Im ersten Zug weil das Feld manipuliert worden ist)
          *           1   2   3   4   5   6
          *      A    x   x   x   x   x   x
@@ -162,7 +148,6 @@ public class GameTests{
          *      E    x   x   x  [2]  x   x
          *      F    x   x   x   x   x   x
          * */
-
 
         Card[][] testFeld = new Card[][] {
                 {dummy,dummy,dummy,dummy,dummy,dummy},
@@ -182,7 +167,7 @@ public class GameTests{
     }
 
     @Test
-    public void testeUntentschieden() throws NotYourTurnException, CardsGoneException{
+    public void testeUnentschieden() throws NotYourTurnException, CardsGoneException, DoublePickException{
         /**     Szenario: Alice nimmt die letzten zwei Karten und verursacht
          *      ein Unentschieden, weil danach Punktegleichstand herrscht.
          *
@@ -215,4 +200,104 @@ public class GameTests{
         Assert.assertEquals(true,devMemory.isDraw());
     }
 
+
+    /************************************************************************************************************
+     ***                                        Exception-Tests                                               ***
+     ***********************************************************************************************************/
+
+    @Test (expected = DoublePickException.class)
+    public void zweiMalDieselbeKarte() throws NotYourTurnException, CardsGoneException, DoublePickException {
+        /**     Szenario: Alice beginnt und versucht zweimal dieselbe Karte aufzudecken
+         *
+         *           1   2   3   4   5   6
+         *      A   [/] [/] [/] [/] [/] [/]
+         *      B   [/] [/] [/] [/] [/] [/]
+         *      C   [/] [/] [/] [/] [/] [/]
+         *      D   [/] [/] [/] [/] [/] [/]
+         *      E   [/] [/] [/] [/] [/] [/]
+         *      F   [/] [/] [/] [/] [/] [/]
+         * */
+        Memory memory = getMemory();
+
+        //NotYourTurnException
+
+        memory.flip(PLAYER_2,Coordinate.A1, Coordinate.A1);
+
+    }
+    @Test (expected = CardsGoneException.class)
+    public void deckeKartenAufDieSchonWegSind() throws CardsGoneException, NotYourTurnException, DoublePickException {
+        /**     Szenario: A1,A2 fehlen - Beide sollen aufgedeckt werden - CardsGoneException soll geworfen werden weil
+         *
+         *           1   2   3   4   5   6
+         *      A    x   x  [/] [/] [/] [/]
+         *      B   [/] [/] [/] [/] [/] [/]
+         *      C   [/] [/] [/] [/] [/] [/]
+         *      D   [/] [/] [/] [/] [/] [/]
+         *      E   [/] [/] [/] [/] [/] [/]
+         *      F   [/] [/] [/] [/] [/] [/]
+         * */
+        Card nulldummy = null;
+        Card[][] testFeld = new Card[][] {
+                {nulldummy,nulldummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy}
+        };
+
+        DevBoardGenerator devBoardGen = new DevBoardGeneratorImpl(testFeld);
+        DevMemory devMemory = getDevMemory(devBoardGen);
+
+        //GameException !
+        devMemory.flip(PLAYER_1, Coordinate.A1, Coordinate.A2);
+    }
+
+    @Test (expected = CardsGoneException.class)
+    public void deckeEineKarteAufDieWegIst() throws CardsGoneException, NotYourTurnException, DoublePickException{
+        /**     Szenario: A1,A2 fehlen - Eine Karte soll aufgedeckt werden, die schon weg ist. CardsGoneException soll geworfen werden.
+         *
+         *           1   2   3   4   5   6
+         *      A    x   x  [/] [/] [/] [/]
+         *      B   [/] [/] [/] [/] [/] [/]
+         *      C   [/] [/] [/] [/] [/] [/]
+         *      D   [/] [/] [/] [/] [/] [/]
+         *      E   [/] [/] [/] [/] [/] [/]
+         *      F   [/] [/] [/] [/] [/] [/]
+         * */
+        Card nulldummy = null;
+        Card[][] testFeld = new Card[][] {
+                {nulldummy,nulldummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy}
+        };
+
+        DevBoardGenerator devBoardGen = new DevBoardGeneratorImpl(testFeld);
+        DevMemory devMemory = getDevMemory(devBoardGen);
+
+        //GameException !
+        devMemory.flip(PLAYER_1, Coordinate.A1, Coordinate.A3);
+    }
+
+    @Test (expected = NotYourTurnException.class)
+    public void spielerIstNichtDran() throws NotYourTurnException, CardsGoneException, DoublePickException {
+        /**     Szenario: PLAYER_1 ist für alle Tests Alice. Hier entsteht ein neues (manipuliertes) Spiel
+         *      und noch niemand hat gezogen. Deshalb ist eigentlich Alice dran, aber Bob versucht zu ziehen.
+         *
+         *           1   2   3   4   5   6
+         *      A   [/] [/] [/] [/] [/] [/]
+         *      B   [/] [/] [/] [/] [/] [/]
+         *      C   [/] [/] [/] [/] [/] [/]
+         *      D   [/] [/] [/] [/] [/] [/]
+         *      E   [/] [/] [/] [/] [/] [/]
+         *      F   [/] [/] [/] [/] [/] [/]
+         * */
+        Memory memory = getMemory();
+
+        //NotYourTurnException
+        memory.flip(PLAYER_2,Coordinate.A1, Coordinate.A2);
+    }
 }
