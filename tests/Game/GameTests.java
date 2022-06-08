@@ -27,13 +27,13 @@ public class GameTests{
 
     //Erstelle das Standard Memory-Brett
     private Memory getMemory(){
-        return new Memory(PLAYER_1, PLAYER_2, "Alice");
+        return new Memory(PLAYER_1, PLAYER_2, ALICE);
     }
 
     //Erzeuge die Entwicklervariante des Memories mit Hintertür
     //@param devBoardGenerator
-    private DevMemory getDevMemory(DevBoardGenerator devBoardGenerator){
-        return new DevMemory(boardGenerator, devBoardGenerator, PLAYER_1, PLAYER_2);
+    private DevMemory getDevMemory(){
+        return new DevMemory(PLAYER_1, PLAYER_2, ALICE);
     }
 
     /************************************************************************************************************
@@ -49,6 +49,30 @@ public class GameTests{
      *       x  = Karte ist nicht im Spiel (inaktiv)
      *
      */
+    @Test
+    public void erfolgreichesBoardErstellt(){
+        /**
+         * Teste, ob der board Generator sachgerecht funktioniert
+         */
+        Card[][] board = boardGenerator.generateBoard6x6();
+        /** for(int i = 0; i<6; i++){
+            for(int j=0; j<6; j++) {
+                System.out.print(board[i][j].getValue());
+                System.out.print("\t");
+            }
+            System.out.print("\n");
+        } */
+    }
+
+    @Test
+    public void seitenWahlErfolgreich() throws StatusException{
+        DevMemory game = this.getDevMemory();
+        game.pickSides();
+
+        Assert.assertEquals(Status.P1_Turn, game.getStatus());
+        Assert.assertEquals(ALICE, game.getOrderPart(ALICE));
+    }
+
     @Test
     public void karteWirdWeggenommen() throws NotYourTurnException, CardsGoneException, DoublePickException{
             /**     Szenario: A1,A2 sind beide "2" und werden von Alice aufgedeckt. Die Karten verschwinden von dem
@@ -74,7 +98,7 @@ public class GameTests{
             };
 
             DevBoardGenerator devBoardGenerator = new DevBoardGeneratorImpl(testFeld);
-            DevMemory devMemory = getDevMemory(devBoardGenerator);
+            DevMemory devMemory = getDevMemory();
 
             Assert.assertEquals(testCard, testFeld[0][0]);
             Assert.assertEquals(testCard, testFeld[0][1]);
@@ -110,7 +134,7 @@ public class GameTests{
         int expcetedScore = 1;
 
         DevBoardGenerator devBoardGenerator = new DevBoardGeneratorImpl(testFeld);
-        DevMemory devMemory = getDevMemory(devBoardGenerator);
+        DevMemory devMemory = getDevMemory();
 
         devMemory.flip(PLAYER_1, Coordinate.A1, Coordinate.A2);
 
@@ -159,7 +183,7 @@ public class GameTests{
         };
 
         DevBoardGenerator devBoardGen = new DevBoardGeneratorImpl(testFeld);
-        DevMemory devMemory = getDevMemory(devBoardGen);
+        DevMemory devMemory = getDevMemory();
 
         devMemory.flip(PLAYER_1, Coordinate.B2, Coordinate.E4);
 
@@ -190,7 +214,7 @@ public class GameTests{
         };
 
         DevBoardGenerator devBoardGen = new DevBoardGeneratorImpl(testFeld);
-        DevMemory devMemory = getDevMemory(devBoardGen);
+        DevMemory devMemory = getDevMemory();
 
         devMemory.setPunkteStand(PLAYER_1, 0);
         devMemory.setPunkteStand(PLAYER_2, 1);
@@ -247,7 +271,7 @@ public class GameTests{
         };
 
         DevBoardGenerator devBoardGen = new DevBoardGeneratorImpl(testFeld);
-        DevMemory devMemory = getDevMemory(devBoardGen);
+        DevMemory devMemory = getDevMemory();
 
         //GameException !
         devMemory.flip(PLAYER_1, Coordinate.A1, Coordinate.A2);
@@ -276,7 +300,7 @@ public class GameTests{
         };
 
         DevBoardGenerator devBoardGen = new DevBoardGeneratorImpl(testFeld);
-        DevMemory devMemory = getDevMemory(devBoardGen);
+        DevMemory devMemory = getDevMemory();
 
         //GameException !
         devMemory.flip(PLAYER_1, Coordinate.A1, Coordinate.A3);

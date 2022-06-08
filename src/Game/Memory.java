@@ -4,16 +4,16 @@ import java.util.HashMap;
 
 public class Memory implements MemoryAPI, Board{
     private final static String default_name="noname";
-    private final String localPlayerName;
+    protected final String localPlayerName;
     private final BoardGenerator boardGen;
-    private Player localPlayer, remotePlayer;
+    protected Player localPlayer, remotePlayer;
     private String remotePlayerName;
 
-    private HashMap<Player, String> order = new HashMap<>();
+    protected HashMap<Player, String> order = new HashMap<>();
 
     private boolean localWon;
 
-    private Status status = Status.START;
+    protected Status status = Status.START;
 
     private Card[][] board;
 

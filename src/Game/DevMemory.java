@@ -2,10 +2,19 @@ package Game;
 
 public class DevMemory extends Memory implements DevMemoryAPI{
 
+    private String name;
     private Card[][] devBoard;
 
-    public DevMemory(BoardGenerator classicGen,DevBoardGenerator devBoardGenerator, Player p1, Player p2){
-        super(p1, p2, );
+    public Status getStatus() {
+        return status;
+    }
+
+    public String getOrderPart(String s){
+        return order.get(localPlayer);
+    }
+
+    public DevMemory(Player p1, Player p2, String name){
+        super(p1, p2, name);
     }
 
     @Override
