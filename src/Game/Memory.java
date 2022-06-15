@@ -4,7 +4,8 @@ import java.util.HashMap;
 
 public class Memory implements MemoryAPI, Board{
     private final static String default_name="noname";
-    private final BoardGenerator boardGen;
+    protected final BoardGenerator boardGen;
+    protected final BoardParser boardParser;
     protected final String localPlayerName;
     protected Player localPlayer, remotePlayer;
     private String remotePlayerName;
@@ -25,6 +26,7 @@ public class Memory implements MemoryAPI, Board{
         this.localPlayerName = name;
         this.remotePlayerName = "default";
         this.boardGen = new BoardGeneratorImplementation();
+        this.boardParser = new BoardParserImplementation();
         this.board = boardGen.generateBoard6x6();
         this.pickSides();
     }
@@ -50,7 +52,7 @@ public class Memory implements MemoryAPI, Board{
     }
 
     @Override
-    public boolean flip(Player player, Coordinate firstCard, Coordinate secondCard) throws NotYourTurnException, CardsGoneException, DoublePickException, StatusException, GameException {
+    public boolean flip(Player player, Coordinates firstCard, Coordinates secondCard) throws NotYourTurnException, CardsGoneException, DoublePickException, StatusException, GameException {
         if(this.status != Status.P1_Turn && this.status != Status.P2_Turn){
             throw new StatusException("flip called, but wrong status");
         }
@@ -67,6 +69,14 @@ public class Memory implements MemoryAPI, Board{
             throw new NotYourTurnException("Spieler 1 ist am Zug!");
         }
 
+        if(firstCard == secondCard){
+            throw new DoublePickException("Du musst zwei verschiedene Karten aufdecken, nicht zwei mal dieselbe.");
+        }
+
+        if((this.parseNgetCard(firstCard).isActive() != true) || (this.parseNgetCard(secondCard).isActive() != true)){
+            throw new CardsGoneException("Eine oder beide gewählten Karten sind nicht mehr im Spiel. Betrachte noch einmal das Feld und wähle eine andere aus.");
+        }
+
         return true;
     }
 
@@ -75,7 +85,7 @@ public class Memory implements MemoryAPI, Board{
     }
 
     @Override
-    public boolean flip(Coordinate firstCard, Coordinate secondCard) throws NotYourTurnException, CardsGoneException, DoublePickException, StatusException, GameException {
+    public boolean flip(Coordinates firstCard, Coordinates secondCard) throws NotYourTurnException, CardsGoneException, DoublePickException, StatusException, GameException {
             return this.flip(localPlayer, firstCard, secondCard);
     }
 
@@ -111,7 +121,7 @@ public class Memory implements MemoryAPI, Board{
     public boolean isFull() {
         for(int i=0; i<BOARDSIZE; i++){
             for(int j=0; j<BOARDSIZE; j++){
-                if(board[i][j] == null) return false;
+                if(this.getCard(i,j) == null) return false;
             }
         }
         return true;
@@ -121,14 +131,22 @@ public class Memory implements MemoryAPI, Board{
     public boolean isEmpty() {
         for(int i=0; i<BOARDSIZE; i++){
             for(int j=0; j<BOARDSIZE; j++){
-                if(board[i][j] != null) return false;
+                if(this.getCard(i,j) != null) return false;
             }
         }
         return true;
     }
 
     @Override
-    public int removeCards(Coordinate x, Coordinate y) {
+    public int removeCards(Coordinates x, Coordinates y) {
         return 0;
+    }
+
+    private Card getCard(int x, int y){
+        return this.board[x][y];
+    }
+
+    private Card parseNgetCard(Coordinates coord){
+        return this.getCard(this.boardParser.parseLetterCoord(coord),this.boardParser.parseNumberCoord(coord));
     }
 }

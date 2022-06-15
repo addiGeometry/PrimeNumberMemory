@@ -3,6 +3,7 @@ package Game;
 class CardImplementation implements Card {
     private int value;
     private boolean faceup;
+    private boolean active;
 
     /** Eine Karte wird druch ihren Wert identifiziert und dargstellt. Eine Karte ist entweder aufgedeckt (faceup) oder zugedeckt (faceup=false)
      *  Standardmäßig werden die Karten zugedeckt erzeugt (Memory-Karten werden umgedreht ausgeteilt) */
@@ -18,6 +19,16 @@ class CardImplementation implements Card {
     @Override
     public int getValue() {
         return this.value;
+    }
+
+    @Override
+    public boolean isActive() {
+        return active;
+    }
+
+    @Override
+    public void deactivate() {
+        this.active = false;
     }
 
     @Override

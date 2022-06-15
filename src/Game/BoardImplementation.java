@@ -39,7 +39,7 @@ public class BoardImplementation implements Board{
     }
 
     @Override
-    public int removeCards(Coordinate x, Coordinate y) {
+    public int removeCards(Coordinates x, Coordinates y) {
         //TODO
         return 0;
     }

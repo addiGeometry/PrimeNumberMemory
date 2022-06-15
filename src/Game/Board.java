@@ -24,5 +24,5 @@ public interface Board{
      * @param y Koordinaten Karte 2
      * @return  Gibt den Wert der Karte zurück (Damit ein Kartenstapel erzeugt werden kann)
      */
-    public int removeCards(Coordinate x, Coordinate y);
+    public int removeCards(Coordinates x, Coordinates y);
 }

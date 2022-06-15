@@ -4,5 +4,5 @@ public interface BoardRenderer{
 
     public void renderBoard();
 
-    public void renderFlippedBoard();
+    public void renderOpenBoard();
 }

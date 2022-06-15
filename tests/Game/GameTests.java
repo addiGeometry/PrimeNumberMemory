@@ -49,6 +49,10 @@ public class GameTests{
      *       x  = Karte ist nicht im Spiel (inaktiv)
      *
      */
+
+    /************************************************************************************************************
+     ***                                           Spielvorbereitung                                          ***
+     ***********************************************************************************************************/
     @Test
     public void erfolgreichesBoardErstellt(){
         /**
@@ -73,6 +77,88 @@ public class GameTests{
         );
     }
 
+    /************************************************************************************************************
+     ***                                            Flip-Methode                                              ***
+     ***********************************************************************************************************/
+
+    @Test (expected = DoublePickException.class)
+    public void zweiMalDieselbeKarte() throws NotYourTurnException, CardsGoneException, DoublePickException, StatusException, GameException {
+        /**     Szenario: Alice beginnt und versucht zweimal dieselbe Karte aufzudecken
+         *
+         *           1   2   3   4   5   6
+         *      A   [/] [/] [/] [/] [/] [/]
+         *      B   [/] [/] [/] [/] [/] [/]
+         *      C   [/] [/] [/] [/] [/] [/]
+         *      D   [/] [/] [/] [/] [/] [/]
+         *      E   [/] [/] [/] [/] [/] [/]
+         *      F   [/] [/] [/] [/] [/] [/]
+         * */
+        Memory memory = getMemory();
+
+        //NotYourTurnException
+        memory.flip(PLAYER_1, Coordinates.A1, Coordinates.A1);
+    }
+
+    @Test (expected = NotYourTurnException.class)
+    public void spielerIstNichtDran() throws NotYourTurnException, CardsGoneException, DoublePickException, StatusException, GameException {
+        /**     Szenario: PLAYER_1 ist für alle Tests Alice. Hier entsteht ein neues (manipuliertes) Spiel
+         *      und noch niemand hat gezogen. Deshalb ist eigentlich Alice dran, aber Bob versucht zu ziehen.
+         *
+         *           1   2   3   4   5   6
+         *      A   [/] [/] [/] [/] [/] [/]
+         *      B   [/] [/] [/] [/] [/] [/]
+         *      C   [/] [/] [/] [/] [/] [/]
+         *      D   [/] [/] [/] [/] [/] [/]
+         *      E   [/] [/] [/] [/] [/] [/]
+         *      F   [/] [/] [/] [/] [/] [/]
+         * */
+        Memory memory = getMemory();
+
+        //NotYourTurnException
+        memory.flip(PLAYER_2, Coordinates.A1, Coordinates.A2);
+    }
+
+    @Test (expected = CardsGoneException.class)
+    public void deckeKartenAufDieSchonWegSind() throws CardsGoneException, NotYourTurnException, DoublePickException, StatusException, GameException {
+        /**     Szenario: A1,A2 fehlen - Beide sollen aufgedeckt werden - CardsGoneException soll geworfen werden weil
+         *
+         *           1   2   3   4   5   6
+         *      A    x   x  [/] [/] [/] [/]
+         *      B   [/] [/] [/] [/] [/] [/]
+         *      C   [/] [/] [/] [/] [/] [/]
+         *      D   [/] [/] [/] [/] [/] [/]
+         *      E   [/] [/] [/] [/] [/] [/]
+         *      F   [/] [/] [/] [/] [/] [/]
+         * */
+
+        DevMemory devMemory = getDevMemory();
+
+        devMemory.deactivateCard(Coordinates.A1);
+        devMemory.deactivateCard(Coordinates.A2);
+
+        //GameException
+        devMemory.flip(PLAYER_1, Coordinates.A1, Coordinates.A2);
+    }
+
+    @Test (expected = CardsGoneException.class)
+    public void deckeEineKarteAufDieWegIst() throws CardsGoneException, NotYourTurnException, DoublePickException, StatusException, GameException {
+        /**     Szenario: A1,A2 fehlen - Eine Karte soll aufgedeckt werden, die schon weg ist. CardsGoneException soll geworfen werden.
+         *
+         *           1   2   3   4   5   6
+         *      A    x  [/]  [/] [/] [/] [/]
+         *      B   [/] [/] [/] [/] [/] [/]
+         *      C   [/] [/] [/] [/] [/] [/]
+         *      D   [/] [/] [/] [/] [/] [/]
+         *      E   [/] [/] [/] [/] [/] [/]
+         *      F   [/] [/] [/] [/] [/] [/]
+         * */
+
+        DevMemory devMemory = getDevMemory();
+
+        devMemory.deactivateCard(Coordinates.A1);
+        //GameException !
+        devMemory.flip(PLAYER_1, Coordinates.A1, Coordinates.A3);
+    }
 
     @Test
     public void karteWirdWeggenommen() throws NotYourTurnException, CardsGoneException, DoublePickException{
@@ -105,7 +191,7 @@ public class GameTests{
             Assert.assertEquals(testCard, testFeld[0][1]);
 
         try {
-            devMemory.flip(PLAYER_1, Coordinate.A1, Coordinate.A2);
+            devMemory.flip(PLAYER_1, Coordinates.A1, Coordinates.A2);
         } catch (StatusException e) {
             throw new RuntimeException(e);
         } catch (GameException e) {
@@ -144,7 +230,7 @@ public class GameTests{
         DevMemory devMemory = getDevMemory();
 
         try {
-            devMemory.flip(PLAYER_1, Coordinate.A1, Coordinate.A2);
+            devMemory.flip(PLAYER_1, Coordinates.A1, Coordinates.A2);
         } catch (StatusException e) {
             throw new RuntimeException(e);
         } catch (GameException e) {
@@ -199,7 +285,7 @@ public class GameTests{
         DevMemory devMemory = getDevMemory();
 
 
-        devMemory.flip(PLAYER_1, Coordinate.B2, Coordinate.E4);
+        devMemory.flip(PLAYER_1, Coordinates.B2, Coordinates.E4);
 
         Assert.assertEquals(true,devMemory.isWinner(PLAYER_2));
     }
@@ -234,7 +320,7 @@ public class GameTests{
         devMemory.setPunkteStand(PLAYER_2, 1);
 
         try {
-            devMemory.flip(PLAYER_1, Coordinate.B2, Coordinate.E4);
+            devMemory.flip(PLAYER_1, Coordinates.B2, Coordinates.E4);
         } catch (StatusException e) {
             throw new RuntimeException(e);
         } catch (GameException e) {
@@ -249,123 +335,4 @@ public class GameTests{
      ***                                        Exception-Tests                                               ***
      ***********************************************************************************************************/
 
-    @Test (expected = DoublePickException.class)
-    public void zweiMalDieselbeKarte() throws NotYourTurnException, CardsGoneException, DoublePickException {
-        /**     Szenario: Alice beginnt und versucht zweimal dieselbe Karte aufzudecken
-         *
-         *           1   2   3   4   5   6
-         *      A   [/] [/] [/] [/] [/] [/]
-         *      B   [/] [/] [/] [/] [/] [/]
-         *      C   [/] [/] [/] [/] [/] [/]
-         *      D   [/] [/] [/] [/] [/] [/]
-         *      E   [/] [/] [/] [/] [/] [/]
-         *      F   [/] [/] [/] [/] [/] [/]
-         * */
-        Memory memory = getMemory();
-
-        //NotYourTurnException
-
-        try {
-            memory.flip(PLAYER_2,Coordinate.A1, Coordinate.A1);
-        } catch (StatusException e) {
-            throw new RuntimeException(e);
-        } catch (GameException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-    @Test (expected = CardsGoneException.class)
-    public void deckeKartenAufDieSchonWegSind() throws CardsGoneException, NotYourTurnException, DoublePickException {
-        /**     Szenario: A1,A2 fehlen - Beide sollen aufgedeckt werden - CardsGoneException soll geworfen werden weil
-         *
-         *           1   2   3   4   5   6
-         *      A    x   x  [/] [/] [/] [/]
-         *      B   [/] [/] [/] [/] [/] [/]
-         *      C   [/] [/] [/] [/] [/] [/]
-         *      D   [/] [/] [/] [/] [/] [/]
-         *      E   [/] [/] [/] [/] [/] [/]
-         *      F   [/] [/] [/] [/] [/] [/]
-         * */
-        Card nulldummy = null;
-        Card[][] testFeld = new Card[][] {
-                {nulldummy,nulldummy,dummy,dummy,dummy,dummy},
-                {dummy,dummy,dummy,dummy,dummy,dummy},
-                {dummy,dummy,dummy,dummy,dummy,dummy},
-                {dummy,dummy,dummy,dummy,dummy,dummy},
-                {dummy,dummy,dummy,dummy,dummy,dummy},
-                {dummy,dummy,dummy,dummy,dummy,dummy}
-        };
-
-        DevBoardGenerator devBoardGen = new DevBoardGeneratorImpl(testFeld);
-        DevMemory devMemory = getDevMemory();
-
-        //GameException !
-        try {
-            devMemory.flip(PLAYER_1, Coordinate.A1, Coordinate.A2);
-        } catch (StatusException e) {
-            throw new RuntimeException(e);
-        } catch (GameException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Test (expected = CardsGoneException.class)
-    public void deckeEineKarteAufDieWegIst() throws CardsGoneException, NotYourTurnException, DoublePickException{
-        /**     Szenario: A1,A2 fehlen - Eine Karte soll aufgedeckt werden, die schon weg ist. CardsGoneException soll geworfen werden.
-         *
-         *           1   2   3   4   5   6
-         *      A    x   x  [/] [/] [/] [/]
-         *      B   [/] [/] [/] [/] [/] [/]
-         *      C   [/] [/] [/] [/] [/] [/]
-         *      D   [/] [/] [/] [/] [/] [/]
-         *      E   [/] [/] [/] [/] [/] [/]
-         *      F   [/] [/] [/] [/] [/] [/]
-         * */
-        Card nulldummy = null;
-        Card[][] testFeld = new Card[][] {
-                {nulldummy,nulldummy,dummy,dummy,dummy,dummy},
-                {dummy,dummy,dummy,dummy,dummy,dummy},
-                {dummy,dummy,dummy,dummy,dummy,dummy},
-                {dummy,dummy,dummy,dummy,dummy,dummy},
-                {dummy,dummy,dummy,dummy,dummy,dummy},
-                {dummy,dummy,dummy,dummy,dummy,dummy}
-        };
-
-        DevBoardGenerator devBoardGen = new DevBoardGeneratorImpl(testFeld);
-        DevMemory devMemory = getDevMemory();
-
-        //GameException !
-        try {
-            devMemory.flip(PLAYER_1, Coordinate.A1, Coordinate.A3);
-        } catch (StatusException e) {
-            throw new RuntimeException(e);
-        } catch (GameException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Test (expected = NotYourTurnException.class)
-    public void spielerIstNichtDran() throws NotYourTurnException, CardsGoneException, DoublePickException {
-        /**     Szenario: PLAYER_1 ist für alle Tests Alice. Hier entsteht ein neues (manipuliertes) Spiel
-         *      und noch niemand hat gezogen. Deshalb ist eigentlich Alice dran, aber Bob versucht zu ziehen.
-         *
-         *           1   2   3   4   5   6
-         *      A   [/] [/] [/] [/] [/] [/]
-         *      B   [/] [/] [/] [/] [/] [/]
-         *      C   [/] [/] [/] [/] [/] [/]
-         *      D   [/] [/] [/] [/] [/] [/]
-         *      E   [/] [/] [/] [/] [/] [/]
-         *      F   [/] [/] [/] [/] [/] [/]
-         * */
-        Memory memory = getMemory();
-
-        //NotYourTurnException
-        try {
-            memory.flip(PLAYER_2,Coordinate.A1, Coordinate.A2);
-        } catch (StatusException e) {
-            throw new RuntimeException(e);
-        } catch (GameException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

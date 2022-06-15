@@ -33,4 +33,25 @@ public class GraficTests {
 
        System.out.println(desiBuild.returnBorderedOutput(feld));
    }
+
+    @Test
+    public void boardOnStart() {
+    }
+
+    @Test
+    public void boardTwoCardsFlipped() {
+    }
+
+    @Test
+    public void boardTwoCardsMissing() {
+    }
+
+    @Test
+    public void boardMoreThenTwoCardsMissing() {
+    }
+
+    @Test
+    public void boardTwoRandomCardsFlipped() {
+    }
+
 }

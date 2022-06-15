@@ -3,7 +3,7 @@ package Game;
 public class BoardParserImplementation implements BoardParser{
 
 
-    private int parse(Coordinate c, Direction d) {
+    private int parse(Coordinates c, Direction d) {
         int[] parsed = new int[2];
         switch (c) {
             case A1 -> {
@@ -156,12 +156,12 @@ public class BoardParserImplementation implements BoardParser{
     }
 
     @Override
-    public int parseLetterCoord(Coordinate c) {
+    public int parseLetterCoord(Coordinates c) {
         return this.parse(c,Direction.vert);
     }
 
     @Override
-    public int parseNumberCoord(Coordinate c) {
+    public int parseNumberCoord(Coordinates c) {
         return this.parse(c,Direction.hori);
     }
 }
