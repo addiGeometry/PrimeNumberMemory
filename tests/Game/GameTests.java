@@ -54,24 +54,25 @@ public class GameTests{
         /**
          * Teste, ob der board Generator sachgerecht funktioniert
          */
-        Card[][] board = boardGenerator.generateBoard6x6();
-        /** for(int i = 0; i<6; i++){
-            for(int j=0; j<6; j++) {
-                System.out.print(board[i][j].getValue());
-                System.out.print("\t");
-            }
-            System.out.print("\n");
-        } */
+        Board memory = getMemory();
+        Assert.assertEquals(true, memory.isFull());
     }
 
     @Test
-    public void seitenWahlErfolgreich() throws StatusException{
-        DevMemory game = this.getDevMemory();
-        game.pickSides();
+    public void ReihenfolgeZugewiesen(){
+        /**
+         * Teste, ob die Reihenfolge zugewiesen worden ist und ein neuer Status eingetreten ist.
+          */
+        DevMemoryAPI game = getDevMemory();
 
         Assert.assertEquals(Status.P1_Turn, game.getStatus());
-        Assert.assertEquals(ALICE, game.getOrderPart(ALICE));
+        Assert.assertEquals(
+                true,
+                game.getFirstPlayer() == ALICE || game.getFirstPlayer() == "default"
+                //TODO
+        );
     }
+
 
     @Test
     public void karteWirdWeggenommen() throws NotYourTurnException, CardsGoneException, DoublePickException{
@@ -103,9 +104,15 @@ public class GameTests{
             Assert.assertEquals(testCard, testFeld[0][0]);
             Assert.assertEquals(testCard, testFeld[0][1]);
 
+        try {
             devMemory.flip(PLAYER_1, Coordinate.A1, Coordinate.A2);
+        } catch (StatusException e) {
+            throw new RuntimeException(e);
+        } catch (GameException e) {
+            throw new RuntimeException(e);
+        }
 
-            Assert.assertEquals(null, testFeld[0][0]);
+        Assert.assertEquals(null, testFeld[0][0]);
             Assert.assertEquals(null, testFeld[0][1]);
     }
 
@@ -136,7 +143,13 @@ public class GameTests{
         DevBoardGenerator devBoardGenerator = new DevBoardGeneratorImpl(testFeld);
         DevMemory devMemory = getDevMemory();
 
-        devMemory.flip(PLAYER_1, Coordinate.A1, Coordinate.A2);
+        try {
+            devMemory.flip(PLAYER_1, Coordinate.A1, Coordinate.A2);
+        } catch (StatusException e) {
+            throw new RuntimeException(e);
+        } catch (GameException e) {
+            throw new RuntimeException(e);
+        }
 
         Assert.assertEquals(expcetedScore, devMemory.hasScore(PLAYER_1));
     }
@@ -162,7 +175,7 @@ public class GameTests{
     }
 
     @Test
-    public void spielerGewinnt() throws NotYourTurnException, CardsGoneException, DoublePickException {
+    public void spielerGewinnt() throws NotYourTurnException, CardsGoneException, DoublePickException, StatusException, GameException {
         /**     Szenario: Alice gewinnt (Im ersten Zug weil das Feld manipuliert worden ist)
          *           1   2   3   4   5   6
          *      A    x   x   x   x   x   x
@@ -184,6 +197,7 @@ public class GameTests{
 
         DevBoardGenerator devBoardGen = new DevBoardGeneratorImpl(testFeld);
         DevMemory devMemory = getDevMemory();
+
 
         devMemory.flip(PLAYER_1, Coordinate.B2, Coordinate.E4);
 
@@ -219,7 +233,13 @@ public class GameTests{
         devMemory.setPunkteStand(PLAYER_1, 0);
         devMemory.setPunkteStand(PLAYER_2, 1);
 
-        devMemory.flip(PLAYER_1, Coordinate.B2, Coordinate.E4);
+        try {
+            devMemory.flip(PLAYER_1, Coordinate.B2, Coordinate.E4);
+        } catch (StatusException e) {
+            throw new RuntimeException(e);
+        } catch (GameException e) {
+            throw new RuntimeException(e);
+        }
 
         Assert.assertEquals(true,devMemory.isDraw());
     }
@@ -245,7 +265,13 @@ public class GameTests{
 
         //NotYourTurnException
 
-        memory.flip(PLAYER_2,Coordinate.A1, Coordinate.A1);
+        try {
+            memory.flip(PLAYER_2,Coordinate.A1, Coordinate.A1);
+        } catch (StatusException e) {
+            throw new RuntimeException(e);
+        } catch (GameException e) {
+            throw new RuntimeException(e);
+        }
 
     }
     @Test (expected = CardsGoneException.class)
@@ -274,7 +300,13 @@ public class GameTests{
         DevMemory devMemory = getDevMemory();
 
         //GameException !
-        devMemory.flip(PLAYER_1, Coordinate.A1, Coordinate.A2);
+        try {
+            devMemory.flip(PLAYER_1, Coordinate.A1, Coordinate.A2);
+        } catch (StatusException e) {
+            throw new RuntimeException(e);
+        } catch (GameException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test (expected = CardsGoneException.class)
@@ -303,7 +335,13 @@ public class GameTests{
         DevMemory devMemory = getDevMemory();
 
         //GameException !
-        devMemory.flip(PLAYER_1, Coordinate.A1, Coordinate.A3);
+        try {
+            devMemory.flip(PLAYER_1, Coordinate.A1, Coordinate.A3);
+        } catch (StatusException e) {
+            throw new RuntimeException(e);
+        } catch (GameException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test (expected = NotYourTurnException.class)
@@ -322,6 +360,12 @@ public class GameTests{
         Memory memory = getMemory();
 
         //NotYourTurnException
-        memory.flip(PLAYER_2,Coordinate.A1, Coordinate.A2);
+        try {
+            memory.flip(PLAYER_2,Coordinate.A1, Coordinate.A2);
+        } catch (StatusException e) {
+            throw new RuntimeException(e);
+        } catch (GameException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

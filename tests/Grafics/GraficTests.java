@@ -21,15 +21,15 @@ public class GraficTests {
    }
    @Test
     public void test2(){
-       DesignBuilderImplementation dia = new DesignBuilderImplementation();
-       DesignBuilder desiBuild = dia;
-       String feld =   "     1   2   3   4   5   6\n" +
-                       "A    x   x  [/] [/] [/] [/]\n" +
-                       "B   [/] [/] [/] [/] [/] [/]\n" +
-                       "C   [/] [/] [/] [/] [/] [/]\n" +
-                       "D   [/] [/] [/] [/] [/] [/]\n" +
-                       "E   [/] [/] [/] [/] [/] [/]\n" +
-                       "F   [/] [/] [/] [/] [/] [/]";
+       DesignBuilder desiBuild = new DesignBuilderImplementation();
+       String feld =    "                                                      "     +
+                        "                   1   2   3   4   5   6              \n"   +
+                        "             A    x   x  [/] [/] [/] [/]             \n"    +
+                        "             B   [/] [/] [/] [/] [/] [/]             \n"    +
+                        "             C   [/] [/] [/] [/] [/] [/]             \n"    +
+                        "             D   [/] [/] [/] [/] [/] [/]             \n"    +
+                        "             E   [/] [/] [/] [/] [/] [/]             \n"    +
+                        "             F   [/] [/] [/] [/] [/] [/]             ";
 
        System.out.println(desiBuild.returnBorderedOutput(feld));
    }

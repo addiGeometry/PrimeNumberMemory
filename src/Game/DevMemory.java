@@ -1,16 +1,15 @@
 package Game;
 
 public class DevMemory extends Memory implements DevMemoryAPI{
-
-    private String name;
     private Card[][] devBoard;
 
     public Status getStatus() {
         return status;
     }
 
-    public String getOrderPart(String s){
-        return order.get(localPlayer);
+    @Override
+    public String getFirstPlayer() {
+        return order.get(Player.P1);
     }
 
     public DevMemory(Player p1, Player p2, String name){
@@ -18,7 +17,7 @@ public class DevMemory extends Memory implements DevMemoryAPI{
     }
 
     @Override
-    public boolean flip(Player player, Coordinate firstCard, Coordinate secondCard) throws NotYourTurnException, CardsGoneException, DoublePickException {
+    public boolean flip(Player player, Coordinate firstCard, Coordinate secondCard) throws NotYourTurnException, CardsGoneException, DoublePickException, StatusException, GameException {
         return false;
     }
 
@@ -29,7 +28,7 @@ public class DevMemory extends Memory implements DevMemoryAPI{
 
     @Override
     public Card[][] getBoard() {
-        return new Card[0][];
+        return devBoard;
     }
 
     @Override
