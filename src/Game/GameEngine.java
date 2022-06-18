@@ -1,7 +1,7 @@
 package Game;
 
 public interface GameEngine{
-    boolean startGame(Player player1, Player player2);
+    boolean startGame(PlayerLogic playerLogic1, PlayerLogic playerLogic2);
 
     /**
      * @return Spiel Status
@@ -15,20 +15,20 @@ public interface GameEngine{
 
     /**
      *
-     * @param player Gebe Anzahl der Paare von einem Spieler aus
+     * @param playerLogic Gebe Anzahl der Paare von einem Spieler aus
      * @return  Anzahl Paare
      */
-    int hasScore(Player player);
+    int hasScore(PlayerLogic playerLogic);
 
     /**
      * @return Wahr wenn Spieler gewonnen hat
      */
-    boolean hasWon(Player player);
+    boolean hasWon(PlayerLogic playerLogic);
 
     /**
      * @return Wahr wenn Spieler gewonnen hat
      */
-    boolean hasLost(Player player);
+    boolean hasLost(PlayerLogic playerLogic);
 
     boolean surrender();
 

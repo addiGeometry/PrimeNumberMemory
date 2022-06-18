@@ -15,8 +15,8 @@ public class GameTests{
     private static final String BOB = "Bob";
 
     //Ein Spiel kann nur gleichzeitig zwei Spieler haben.
-    private static final Player PLAYER_1 = Player.P1;
-    private static final Player PLAYER_2 = Player.P2;
+    private static final PlayerLogic PLAYER_LOGIC_1 = PlayerLogic.P1;
+    private static final PlayerLogic PLAYER_LOGIC_2 = PlayerLogic.P2;
 
     //Erzeuge zwei Kartenschablonen für Tests
     Card testCard = new CardImplementation(2);
@@ -27,13 +27,13 @@ public class GameTests{
 
     //Erstelle das Standard Memory-Brett
     private Memory getMemory(){
-        return new Memory(PLAYER_1, PLAYER_2, ALICE);
+        return new Memory(PLAYER_LOGIC_1, PLAYER_LOGIC_2, ALICE);
     }
 
     //Erzeuge die Entwicklervariante des Memories mit Hintertür
     //@param devBoardGenerator
     private DevMemory getDevMemory(){
-        return new DevMemory(PLAYER_1, PLAYER_2, ALICE);
+        return new DevMemory(PLAYER_LOGIC_1, PLAYER_LOGIC_2, ALICE);
     }
 
     /************************************************************************************************************
@@ -96,12 +96,12 @@ public class GameTests{
         Memory memory = getMemory();
 
         //NotYourTurnException
-        memory.flip(PLAYER_1, Coordinates.A1, Coordinates.A1);
+        memory.flip(PLAYER_LOGIC_1, Coordinates.A1, Coordinates.A1);
     }
 
     @Test (expected = NotYourTurnException.class)
     public void spielerIstNichtDran() throws NotYourTurnException, CardsGoneException, DoublePickException, StatusException, GameException {
-        /**     Szenario: PLAYER_1 ist für alle Tests Alice. Hier entsteht ein neues (manipuliertes) Spiel
+        /**     Szenario: PLAYER_LOGIC_1 ist für alle Tests Alice. Hier entsteht ein neues (manipuliertes) Spiel
          *      und noch niemand hat gezogen. Deshalb ist eigentlich Alice dran, aber Bob versucht zu ziehen.
          *
          *           1   2   3   4   5   6
@@ -115,7 +115,7 @@ public class GameTests{
         Memory memory = getMemory();
 
         //NotYourTurnException
-        memory.flip(PLAYER_2, Coordinates.A1, Coordinates.A2);
+        memory.flip(PLAYER_LOGIC_2, Coordinates.A1, Coordinates.A2);
     }
 
     @Test (expected = CardsGoneException.class)
@@ -137,7 +137,7 @@ public class GameTests{
         devMemory.deactivateCard(Coordinates.A2);
 
         //GameException
-        devMemory.flip(PLAYER_1, Coordinates.A1, Coordinates.A2);
+        devMemory.flip(PLAYER_LOGIC_1, Coordinates.A1, Coordinates.A2);
     }
 
     @Test (expected = CardsGoneException.class)
@@ -157,11 +157,11 @@ public class GameTests{
 
         devMemory.deactivateCard(Coordinates.A1);
         //GameException !
-        devMemory.flip(PLAYER_1, Coordinates.A1, Coordinates.A3);
+        devMemory.flip(PLAYER_LOGIC_1, Coordinates.A1, Coordinates.A3);
     }
 
     @Test
-    public void karteWirdWeggenommen() throws NotYourTurnException, CardsGoneException, DoublePickException{
+    public void karteWirdWeggenommen() throws NotYourTurnException, CardsGoneException, DoublePickException, StatusException, GameException {
             /**     Szenario: A1,A2 sind beide "2" und werden von Alice aufgedeckt. Die Karten verschwinden von dem
              *      Spielbrett.
              *
@@ -173,7 +173,6 @@ public class GameTests{
              *      E   [/] [/] [/] [/] [/] [/]
              *      F   [/] [/] [/] [/] [/] [/]
              * */
-            boolean aufDemFeld = true;
 
             Card[][] testFeld = new Card[][] {
                     {testCard,testCard,dummy,dummy,dummy,dummy},
@@ -184,26 +183,25 @@ public class GameTests{
                     {dummy,dummy,dummy,dummy,dummy,dummy}
             };
 
-            DevBoardGenerator devBoardGenerator = new DevBoardGeneratorImpl(testFeld);
             DevMemory devMemory = getDevMemory();
+            devMemory.setBoard(testFeld);
 
-            Assert.assertEquals(testCard, testFeld[0][0]);
-            Assert.assertEquals(testCard, testFeld[0][1]);
+            Assert.assertEquals(testCard, devMemory.getCard(0,0));
+            Assert.assertEquals(testCard, devMemory.getCard(0,1));
 
-        try {
-            devMemory.flip(PLAYER_1, Coordinates.A1, Coordinates.A2);
-        } catch (StatusException e) {
-            throw new RuntimeException(e);
-        } catch (GameException e) {
-            throw new RuntimeException(e);
-        }
+            Assert.assertEquals(testCard.getValue(), devMemory.getCard(0,1).getValue());
 
-        Assert.assertEquals(null, testFeld[0][0]);
-            Assert.assertEquals(null, testFeld[0][1]);
+            devMemory.flip(PLAYER_LOGIC_1, Coordinates.A1, Coordinates.A2);
+
+            Assert.assertEquals(false, devMemory.getCard(0,0).isActive());
+            Assert.assertEquals(false, devMemory.getCard(0,1).isActive());
+
+            //Stichprobe: is B2 aktiv?
+            Assert.assertEquals(true, devMemory.getCard(1,1).isActive());
     }
 
     @Test
-    public void TesteSpielerScore() throws NotYourTurnException, CardsGoneException, DoublePickException{
+    public void TesteSpielerScore() throws NotYourTurnException, CardsGoneException, DoublePickException, StatusException, GameException {
         /**     Szenario: A1,A2 sind beide "2" und werden von Alice aufgedeckt. Paaranzahl von Alice erhöht sich
          *
          *           1   2   3   4   5   6
@@ -223,27 +221,26 @@ public class GameTests{
                 {dummy,dummy,dummy,dummy,dummy,dummy},
                 {dummy,dummy,dummy,dummy,dummy,dummy}
         };
-
         int expcetedScore = 1;
 
-        DevBoardGenerator devBoardGenerator = new DevBoardGeneratorImpl(testFeld);
         DevMemory devMemory = getDevMemory();
+        devMemory.setBoard(testFeld);
 
-        try {
-            devMemory.flip(PLAYER_1, Coordinates.A1, Coordinates.A2);
-        } catch (StatusException e) {
-            throw new RuntimeException(e);
-        } catch (GameException e) {
-            throw new RuntimeException(e);
-        }
+        Assert.assertEquals(testCard, devMemory.getCard(0,0));
+        Assert.assertEquals(testCard, devMemory.getCard(0,1));
 
-        Assert.assertEquals(expcetedScore, devMemory.hasScore(PLAYER_1));
+        Assert.assertEquals(testCard.getValue(), devMemory.getCard(0,1).getValue());
+
+
+        devMemory.flip(PLAYER_LOGIC_1, Coordinates.A1, Coordinates.A2);
+
+        Assert.assertEquals(expcetedScore, devMemory.hasScore(PLAYER_LOGIC_1));
     }
 
     @Test
     public void spielerGibtAuf(){
         /**     Szenario: Bob gibt auf, weil er keine Chancen mehr sieht zu gewinnen
-         *      ⇨ Somit hat PLAYER_1, Alice gewonnen
+         *      ⇨ Somit hat PLAYER_LOGIC_1, Alice gewonnen
          *
          *           1   2   3   4   5   6
          *      A   [/] [/] [/] [/] [/] [/]
@@ -255,9 +252,9 @@ public class GameTests{
          * */
         Memory memory = getMemory();
 
-        memory.surrender(PLAYER_2);
+        memory.surrender(PLAYER_LOGIC_2);
 
-        Assert.assertEquals(true,memory.isWinner(PLAYER_1));
+        Assert.assertEquals(true,memory.isWinner(PLAYER_LOGIC_1));
     }
 
     @Test
@@ -285,9 +282,9 @@ public class GameTests{
         DevMemory devMemory = getDevMemory();
 
 
-        devMemory.flip(PLAYER_1, Coordinates.B2, Coordinates.E4);
+        devMemory.flip(PLAYER_LOGIC_1, Coordinates.B2, Coordinates.E4);
 
-        Assert.assertEquals(true,devMemory.isWinner(PLAYER_2));
+        Assert.assertEquals(true,devMemory.isWinner(PLAYER_LOGIC_2));
     }
 
     @Test
@@ -316,11 +313,11 @@ public class GameTests{
         DevBoardGenerator devBoardGen = new DevBoardGeneratorImpl(testFeld);
         DevMemory devMemory = getDevMemory();
 
-        devMemory.setPunkteStand(PLAYER_1, 0);
-        devMemory.setPunkteStand(PLAYER_2, 1);
+        devMemory.setPunkteStand(PLAYER_LOGIC_1, 0);
+        devMemory.setPunkteStand(PLAYER_LOGIC_2, 1);
 
         try {
-            devMemory.flip(PLAYER_1, Coordinates.B2, Coordinates.E4);
+            devMemory.flip(PLAYER_LOGIC_1, Coordinates.B2, Coordinates.E4);
         } catch (StatusException e) {
             throw new RuntimeException(e);
         } catch (GameException e) {

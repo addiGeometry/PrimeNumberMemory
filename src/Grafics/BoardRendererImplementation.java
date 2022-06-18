@@ -1,5 +1,6 @@
-package Game;
+package Grafics;
 
+import Game.Coordinates;
 import Grafics.BoardRenderer;
 
 import java.util.HashMap;

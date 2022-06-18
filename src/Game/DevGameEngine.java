@@ -6,7 +6,7 @@ interface DevGameEngine extends MemoryAPI, GameEngine{
      */
     void setBoard(Card[][] board);
 
-    void setPunkteStand(Player player1, int i);
+    void setPunkteStand(PlayerLogic playerLogic1, int i);
 
-    boolean isDraw(Player player2);
+    boolean isDraw(PlayerLogic playerLogic2);
 }

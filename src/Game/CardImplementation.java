@@ -9,6 +9,7 @@ class CardImplementation implements Card {
      *  Standardmäßig werden die Karten zugedeckt erzeugt (Memory-Karten werden umgedreht ausgeteilt) */
 
     public CardImplementation(int cValue){
+        this.active = true;
         this.value = cValue;
         this.faceup = false;
     }

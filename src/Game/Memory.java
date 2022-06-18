@@ -1,20 +1,28 @@
 package Game;
 
+import Grafics.BoardRenderer;
+import Grafics.BoardRendererImplementation;
+
 import java.util.HashMap;
 
 public class Memory implements MemoryAPI, Board{
-    private final static String default_name="noname";
+    private final static String DEFAULT_NAME="defo";
     protected final BoardGenerator boardGen;
     protected final BoardParser boardParser;
+
+    private final BoardRenderer boardRenderer;
     protected final String localPlayerName;
-    protected Player localPlayer, remotePlayer;
-    private String remotePlayerName;
+    protected PlayerLogic localPlayerLogic, remotePlayerLogic;
+    protected String remotePlayerName;
 
-    private int localPlayerStack, remotePlayerStack;
+    private Player localPlayer, remotePlayer;
 
-    protected HashMap<Player, String> order = new HashMap<>();
+    protected HashMap<String, PlayerLogic> order = new HashMap<>();
+    protected HashMap<PlayerLogic, Player> assign = new HashMap<>();
+
 
     private boolean localWon;
+    public static int zug;
 
     protected Status status = Status.START;
 
@@ -22,13 +30,20 @@ public class Memory implements MemoryAPI, Board{
     private static final int BOARDSIZE=6;
 
 
-    public Memory(Player p1, Player p2, String name){
+    public Memory(PlayerLogic p1, PlayerLogic p2, String name){
         this.localPlayerName = name;
-        this.remotePlayerName = "default";
+        this.remotePlayerName = DEFAULT_NAME;
+
         this.boardGen = new BoardGeneratorImplementation();
         this.boardParser = new BoardParserImplementation();
         this.board = boardGen.generateBoard6x6();
+        this.boardRenderer = new BoardRendererImplementation();
         this.pickSides();
+
+        this.localPlayer = new Player(localPlayerName, order.get(localPlayerName));
+        this.remotePlayer = new Player(remotePlayerName, order.get(remotePlayerName));
+        this.assign.put(order.get(localPlayerName), localPlayer);
+        this.assign.put(order.get(remotePlayerName), remotePlayer);
     }
 
     private void pickSides(){
@@ -46,26 +61,26 @@ public class Memory implements MemoryAPI, Board{
             firstplayer = remotePlayerName;
             secondplayer = localPlayerName;
         }
-        this.order.put(Player.P1, firstplayer);
-        this.order.put(Player.P2, secondplayer);
+        this.order.put(firstplayer, PlayerLogic.P1);
+        this.order.put(secondplayer, PlayerLogic.P2);
         this.status = Status.P1_Turn;
     }
 
     @Override
-    public boolean flip(Player player, Coordinates firstCard, Coordinates secondCard) throws NotYourTurnException, CardsGoneException, DoublePickException, StatusException, GameException {
+    public boolean flip(PlayerLogic playerLogic, Coordinates firstCard, Coordinates secondCard) throws NotYourTurnException, CardsGoneException, DoublePickException, StatusException, GameException {
         if(this.status != Status.P1_Turn && this.status != Status.P2_Turn){
             throw new StatusException("flip called, but wrong status");
         }
 
-        if(player == null){
-            throw new GameException("player must not be null");
+        if(playerLogic == null){
+            throw new GameException("playerLogic must not be null");
         }
 
-        if( (player == Player.P1) && (this.status == Status.P2_Turn) ){
+        if( (playerLogic == PlayerLogic.P1) && (this.status == Status.P2_Turn) ){
             throw new NotYourTurnException("Spieler 2 ist am Zug!");
         }
 
-        if( (player == Player.P2) && (this.status == Status.P1_Turn) ){
+        if( (playerLogic == PlayerLogic.P2) && (this.status == Status.P1_Turn) ){
             throw new NotYourTurnException("Spieler 1 ist am Zug!");
         }
 
@@ -76,21 +91,58 @@ public class Memory implements MemoryAPI, Board{
         if((this.parseNgetCard(firstCard).isActive() != true) || (this.parseNgetCard(secondCard).isActive() != true)){
             throw new CardsGoneException("Eine oder beide gewählten Karten sind nicht mehr im Spiel. Betrachte noch einmal das Feld und wähle eine andere aus.");
         }
+        Card first =  flipHelp(firstCard);
+        Card second = flipHelp(secondCard);
 
-        return true;
+        if(first.getValue() == second.getValue()){
+            first.deactivate();
+            second.deactivate();
+            assign.get(playerLogic).incScore();
+        }
+
+        boolean hasWon = this.hasWon(playerLogic);
+
+        if(hasWon){
+            System.out.println("Glückwunsch! Spieler: " + this.localPlayerName + " hat nach " + zug + " Zügen gewonnen");
+            this.status = Status.ENDED;
+            //TODO
+            //if(this.localSymbol == piece) this.localWon = true;
+        }
+        else{
+            this.status = this.status == Status.P1_Turn ? Status.P2_Turn : Status.P1_Turn;
+            //Maybe?
+            //TODO
+        }
+
+        //TODO
+        //Protokoll aka. Tell the other side
+        return hasWon;
     }
 
-    private void flipFirstCard(){
+    private String mapOrderBw(PlayerLogic playerLogic){
+        if(playerLogic == order.get(localPlayerName)) return localPlayerName;
+        else return remotePlayerName;
+    }
 
+    protected boolean hasWon(PlayerLogic playerLogic) {
+        if(assign.get(playerLogic).getScore() > 9) return true;
+        return false;
+    }
+
+    protected Card flipHelp(Coordinates coord){
+        int vertical = boardParser.parseLetterCoord(coord);
+        int horizontal = boardParser.parseNumberCoord(coord);
+
+        return board[vertical][horizontal];
     }
 
     @Override
     public boolean flip(Coordinates firstCard, Coordinates secondCard) throws NotYourTurnException, CardsGoneException, DoublePickException, StatusException, GameException {
-            return this.flip(localPlayer, firstCard, secondCard);
+            return this.flip(localPlayerLogic, firstCard, secondCard);
     }
 
     @Override
-    public void surrender(Player player) {
+    public void surrender(PlayerLogic playerLogic) {
     }
 
     @Override
@@ -98,12 +150,12 @@ public class Memory implements MemoryAPI, Board{
         return new Card[0][];
     }
 
-    public int hasScore(Player player) {
-        return 0;
+    public int hasScore(PlayerLogic playerLogic) {
+        return assign.get(playerLogic).getScore();
     }
 
     @Override
-    public boolean isWinner(Player p1) {
+    public boolean isWinner(PlayerLogic p1) {
         return false;
     }
 
@@ -142,11 +194,11 @@ public class Memory implements MemoryAPI, Board{
         return 0;
     }
 
-    private Card getCard(int x, int y){
+    public Card getCard(int x, int y){
         return this.board[x][y];
     }
 
-    private Card parseNgetCard(Coordinates coord){
+    protected Card parseNgetCard(Coordinates coord){
         return this.getCard(this.boardParser.parseLetterCoord(coord),this.boardParser.parseNumberCoord(coord));
     }
 }
