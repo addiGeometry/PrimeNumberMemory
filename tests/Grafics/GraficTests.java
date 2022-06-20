@@ -45,7 +45,7 @@ public class GraficTests {
         BoardRenderer render = new BoardRendererImplementation();
         DesignBuilder desiBuild = new DesignBuilderImplementation();
 
-        System.out.println(desiBuild.returnBorderedOutput(render.renderOpenBoard(memory.getCurrentBoard(), Coordinates.A1, Coordinates.B1)));
+        System.out.println(desiBuild.returnBorderedOutput(render.renderOpenBoard(memory.getCurrentBoard(), Coordinates.D5, Coordinates.C3)));
     }
 
     @Test
