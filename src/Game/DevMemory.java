@@ -19,11 +19,6 @@ public class DevMemory extends Memory implements DevMemoryAPI{
     }
 
     @Override
-    public Card[][] getBoard() {
-        return devBoard;
-    }
-
-    @Override
     public void setPunkteStand(PlayerLogic playerLogic, int punkte) {
     }
 

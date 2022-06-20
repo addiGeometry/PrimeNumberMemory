@@ -1,6 +1,6 @@
 package Game;
 
-interface Card{
+public interface Card{
     /** Gebe eine Karte zurück */
     int getValue();
 

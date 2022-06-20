@@ -154,11 +154,6 @@ public class Memory implements MemoryAPI, Board{
         //Notify Winner on the other side
     }
 
-    @Override
-    public Card[][] getBoard() {
-        return new Card[0][];
-    }
-
     public int hasScore(PlayerLogic playerLogic) {
         return assign.get(playerLogic).getScore();
     }
@@ -172,6 +167,7 @@ public class Memory implements MemoryAPI, Board{
     public Card[][] getCurrentBoard() {
         return this.board;
     }
+
 
     @Override
     public boolean isFull() {

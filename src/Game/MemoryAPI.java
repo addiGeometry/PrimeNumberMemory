@@ -21,7 +21,6 @@ public interface MemoryAPI {
     /**
      * @return gebe das Aktuelle Feld zurück
      */
-    Card[][] getBoard();
 
     int hasScore(PlayerLogic playerLogic);
 

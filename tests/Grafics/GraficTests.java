@@ -1,5 +1,9 @@
 package Grafics;
 
+import Game.Card;
+import Game.Coordinates;
+import Game.Memory;
+import Game.PlayerLogic;
 import org.junit.Test;
 
 public class GraficTests {
@@ -36,6 +40,12 @@ public class GraficTests {
 
     @Test
     public void boardOnStart() {
+        Memory memory = new Memory(PlayerLogic.P1, PlayerLogic.P2, "test");
+
+        BoardRenderer render = new BoardRendererImplementation();
+        DesignBuilder desiBuild = new DesignBuilderImplementation();
+
+        System.out.println(desiBuild.returnBorderedOutput(render.renderOpenBoard(memory.getCurrentBoard(), Coordinates.A1, Coordinates.B1)));
     }
 
     @Test

@@ -1,5 +1,5 @@
 package Game;
 
-enum PlayerLogic {
+public enum PlayerLogic {
     P1,P2
 }
