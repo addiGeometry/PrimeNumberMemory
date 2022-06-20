@@ -20,7 +20,9 @@ public class GameTests{
 
     //Erzeuge zwei Kartenschablonen für Tests
     Card testCard = new CardImplementation(2);
-    Card dummy = new CardImplementation(4); //Dummy-Karte 4 ist keine Primzahl
+    Card dummy = new CardImplementation(4);//Dummy-Karte 4 ist keine Primzahl
+
+    Card toDeactivate = new CardImplementation(-1);
 
     //Der BoardGenerator generiert ein zufälliges Memory-Feld aus der Zahlenmenge. Bildlich gesehen mischt er die Karten und teilt Sie aus
     BoardGenerator boardGenerator = new BoardGeneratorImplementation();
@@ -60,6 +62,36 @@ public class GameTests{
          */
         Board memory = getMemory();
         Assert.assertEquals(true, memory.isFull());
+    }
+
+    @Test
+    public void alleKartenInaktiv(){
+        /**     Spiel wird mit nur inaktiven Karten initialisiert
+         *
+         *           1   2   3   4   5   6
+         *      A    x   x   x   x   x   x
+         *      B    x   x   x   x   x   x
+         *      C    x   x   x   x   x   x
+         *      D    x   x   x   x   x   x
+         *      E    x   x   x   x   x   x
+         *      F    x   x   x   x   x   x
+         * */
+
+        DevMemory devMemory = getDevMemory();
+
+        toDeactivate.deactivate();
+
+        Card[][] testFeld = new Card[][] {
+                {toDeactivate,toDeactivate,toDeactivate,toDeactivate,toDeactivate,toDeactivate},
+                {toDeactivate,toDeactivate,toDeactivate,toDeactivate,toDeactivate,toDeactivate},
+                {toDeactivate,toDeactivate,toDeactivate,toDeactivate,toDeactivate,toDeactivate},
+                {toDeactivate,toDeactivate,toDeactivate,toDeactivate,toDeactivate,toDeactivate},
+                {toDeactivate,toDeactivate,toDeactivate,toDeactivate,toDeactivate,toDeactivate},
+                {toDeactivate,toDeactivate,toDeactivate,toDeactivate,toDeactivate,toDeactivate}
+        };
+
+        devMemory.setBoard(testFeld);
+        devMemory.isEmpty();
     }
 
     @Test
@@ -221,7 +253,9 @@ public class GameTests{
                 {dummy,dummy,dummy,dummy,dummy,dummy},
                 {dummy,dummy,dummy,dummy,dummy,dummy}
         };
-        int expcetedScore = 1;
+        int expectedScoreP1 = 1;
+        int expectedScoreP2 = 0;
+
 
         DevMemory devMemory = getDevMemory();
         devMemory.setBoard(testFeld);
@@ -234,27 +268,41 @@ public class GameTests{
 
         devMemory.flip(PLAYER_LOGIC_1, Coordinates.A1, Coordinates.A2);
 
-        Assert.assertEquals(expcetedScore, devMemory.hasScore(PLAYER_LOGIC_1));
+        Assert.assertEquals(expectedScoreP1, devMemory.hasScore(PLAYER_LOGIC_1));
+        Assert.assertEquals(expectedScoreP2, devMemory.hasScore(PLAYER_LOGIC_2));
     }
-
     @Test
-    public void spielerGibtAuf(){
-        /**     Szenario: Bob gibt auf, weil er keine Chancen mehr sieht zu gewinnen
-         *      ⇨ Somit hat PLAYER_LOGIC_1, Alice gewonnen
+    public void TesteSpielerStatusWechsel() throws NotYourTurnException, CardsGoneException, DoublePickException, StatusException, GameException {
+        /**     Szenario: A1,A2 sind beide "2" und werden von Alice aufgedeckt. Jetzt ist Bob dran
          *
          *           1   2   3   4   5   6
-         *      A   [/] [/] [/] [/] [/] [/]
+         *      A   [2] [2] [/] [/] [/] [/]
          *      B   [/] [/] [/] [/] [/] [/]
          *      C   [/] [/] [/] [/] [/] [/]
          *      D   [/] [/] [/] [/] [/] [/]
          *      E   [/] [/] [/] [/] [/] [/]
          *      F   [/] [/] [/] [/] [/] [/]
          * */
-        Memory memory = getMemory();
 
-        memory.surrender(PLAYER_LOGIC_2);
+        Card[][] testFeld = new Card[][] {
+                {testCard,testCard,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy}
+        };
 
-        Assert.assertEquals(true,memory.isWinner(PLAYER_LOGIC_1));
+        DevMemory devMemory = getDevMemory();
+        devMemory.setBoard(testFeld);
+
+        Assert.assertEquals(testCard, devMemory.getCard(0,0));
+        Assert.assertEquals(testCard, devMemory.getCard(0,1));
+
+        devMemory.flip(PLAYER_LOGIC_1, Coordinates.A1, Coordinates.A2);
+
+        //Jetzt ist Player2 dran
+        Assert.assertEquals(Status.P2_Turn,devMemory.status);
     }
 
     @Test
@@ -268,23 +316,24 @@ public class GameTests{
          *      E    x   x   x  [2]  x   x
          *      F    x   x   x   x   x   x
          * */
-
+        toDeactivate.deactivate();
         Card[][] testFeld = new Card[][] {
-                {dummy,dummy,dummy,dummy,dummy,dummy},
-                {dummy,testCard,dummy,dummy,dummy,dummy},
-                {dummy,dummy,dummy,dummy,dummy,dummy},
-                {dummy,dummy,dummy,dummy,dummy,dummy},
-                {dummy,dummy,dummy,dummy,dummy,dummy},
-                {dummy,dummy,dummy,testCard,dummy,dummy}
+                {toDeactivate,toDeactivate,toDeactivate,toDeactivate,toDeactivate,toDeactivate},
+                {toDeactivate,testCard,toDeactivate,toDeactivate,toDeactivate,toDeactivate},
+                {toDeactivate,toDeactivate,toDeactivate,toDeactivate,toDeactivate,toDeactivate},
+                {toDeactivate,toDeactivate,toDeactivate,toDeactivate,toDeactivate,toDeactivate},
+                {toDeactivate,toDeactivate,toDeactivate,testCard,toDeactivate,toDeactivate},
+                {toDeactivate,toDeactivate,toDeactivate,toDeactivate,toDeactivate,toDeactivate}
         };
 
-        DevBoardGenerator devBoardGen = new DevBoardGeneratorImpl(testFeld);
+
         DevMemory devMemory = getDevMemory();
+        devMemory.setBoard(testFeld);
 
-
+        devMemory.setPlayerScore(PLAYER_LOGIC_1, 8);
         devMemory.flip(PLAYER_LOGIC_1, Coordinates.B2, Coordinates.E4);
 
-        Assert.assertEquals(true,devMemory.isWinner(PLAYER_LOGIC_2));
+        Assert.assertEquals(true,devMemory.hasWon(PLAYER_LOGIC_1));
     }
 
     @Test
@@ -327,6 +376,52 @@ public class GameTests{
         Assert.assertEquals(true,devMemory.isDraw());
     }
 
+    /************************************************************************************************************
+     ***                                        Test von "Aufgeben"                                           ***
+     ***********************************************************************************************************/
+
+    @Test
+    public void spielerGibtAufStatusÄndertSich() throws StatusException {
+        /**     Szenario: Bob gibt auf, weil er keine Chancen mehr sieht zu gewinnen
+         *      ⇨ Somit hat PLAYER_LOGIC_1, Alice gewonnen
+         *
+         *           1   2   3   4   5   6
+         *      A   [/] [/] [/] [/] [/] [/]
+         *      B   [/] [/] [/] [/] [/] [/]
+         *      C   [/] [/] [/] [/] [/] [/]
+         *      D   [/] [/] [/] [/] [/] [/]
+         *      E   [/] [/] [/] [/] [/] [/]
+         *      F   [/] [/] [/] [/] [/] [/]
+         * */
+        DevMemory devMemory = getDevMemory();
+
+        devMemory.surrender(PLAYER_LOGIC_2);
+
+        Assert.assertEquals(Status.ENDED, devMemory.getStatus());
+    }
+
+    @Test
+    public void spielerGibtAufGegenseiteGewinnt() throws StatusException {
+        /**     Szenario: Bob gibt auf, weil er keine Chancen mehr sieht zu gewinnen
+         *      ⇨ Somit hat PLAYER_LOGIC_1, Alice gewonnen
+         *
+         *           1   2   3   4   5   6
+         *      A   [/] [/] [/] [/] [/] [/]
+         *      B   [/] [/] [/] [/] [/] [/]
+         *      C   [/] [/] [/] [/] [/] [/]
+         *      D   [/] [/] [/] [/] [/] [/]
+         *      E   [/] [/] [/] [/] [/] [/]
+         *      F   [/] [/] [/] [/] [/] [/]
+         * */
+        boolean expectedOtherSideWinner = true;
+
+        DevMemory devMemory = getDevMemory();
+
+        devMemory.surrender(PLAYER_LOGIC_2);
+
+        Assert.assertEquals(expectedOtherSideWinner, devMemory.hasWon(PLAYER_LOGIC_1));
+        //TODO
+    }
 
     /************************************************************************************************************
      ***                                        Exception-Tests                                               ***

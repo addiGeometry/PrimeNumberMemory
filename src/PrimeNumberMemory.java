@@ -1,4 +1,4 @@
-import Grafics.MemoryGui;
+import Grafics.MemoryUI;
 
 public class PrimeNumberMemory {
     public static void main(String args[]){
@@ -12,7 +12,7 @@ public class PrimeNumberMemory {
         System.out.println("Greatings " + args[0]);
         System.out.println("Enjoy the ride");
 
-        MemoryGui userCMD = new MemoryGui(args[0],System.in, System.out);
+        MemoryUI userCMD = new MemoryUI(args[0],System.in, System.out);
 
         userCMD.printInstructions();
         userCMD.doCommandLoop();

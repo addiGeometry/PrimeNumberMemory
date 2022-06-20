@@ -4,6 +4,7 @@ import Grafics.BoardRenderer;
 import Grafics.BoardRendererImplementation;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class Memory implements MemoryAPI, Board{
     private final static String DEFAULT_NAME="defo";
@@ -98,6 +99,7 @@ public class Memory implements MemoryAPI, Board{
             first.deactivate();
             second.deactivate();
             assign.get(playerLogic).incScore();
+            System.out.println("Super, Spieler " + assign.get(playerLogic) + " hat erfolgreich das Paar mit der Primzahl " + first.getValue() + " aufgedeckt!");
         }
 
         boolean hasWon = this.hasWon(playerLogic);
@@ -105,8 +107,7 @@ public class Memory implements MemoryAPI, Board{
         if(hasWon){
             System.out.println("Glückwunsch! Spieler: " + this.localPlayerName + " hat nach " + zug + " Zügen gewonnen");
             this.status = Status.ENDED;
-            //TODO
-            //if(this.localSymbol == piece) this.localWon = true;
+            if(order.get(localPlayerName) == playerLogic) this.localWon = true;
         }
         else{
             this.status = this.status == Status.P1_Turn ? Status.P2_Turn : Status.P1_Turn;
@@ -116,6 +117,9 @@ public class Memory implements MemoryAPI, Board{
 
         //TODO
         //Protokoll aka. Tell the other side
+
+        this.notifyBoardChanged();
+
         return hasWon;
     }
 
@@ -125,7 +129,7 @@ public class Memory implements MemoryAPI, Board{
     }
 
     protected boolean hasWon(PlayerLogic playerLogic) {
-        if(assign.get(playerLogic).getScore() > 9) return true;
+        if(assign.get(playerLogic).getScore() > 8) return true;
         return false;
     }
 
@@ -142,7 +146,12 @@ public class Memory implements MemoryAPI, Board{
     }
 
     @Override
-    public void surrender(PlayerLogic playerLogic) {
+    public void surrender(PlayerLogic playerLogic) throws StatusException{
+        if(this.status == Status.ENDED) throw new StatusException("the game is over already!");
+
+        this.status = Status.ENDED;
+        //TODO
+        //Notify Winner on the other side
     }
 
     @Override
@@ -155,25 +164,20 @@ public class Memory implements MemoryAPI, Board{
     }
 
     @Override
-    public boolean isWinner(PlayerLogic p1) {
-        return false;
-    }
-
-    @Override
     public boolean isDraw() {
         return false;
     }
 
     @Override
     public Card[][] getCurrentBoard() {
-        return new Card[0][];
+        return this.board;
     }
 
     @Override
     public boolean isFull() {
         for(int i=0; i<BOARDSIZE; i++){
             for(int j=0; j<BOARDSIZE; j++){
-                if(this.getCard(i,j) == null) return false;
+                if(!this.getCard(i,j).isActive()) return false;
             }
         }
         return true;
@@ -183,7 +187,7 @@ public class Memory implements MemoryAPI, Board{
     public boolean isEmpty() {
         for(int i=0; i<BOARDSIZE; i++){
             for(int j=0; j<BOARDSIZE; j++){
-                if(this.getCard(i,j) != null) return false;
+                if(this.getCard(i,j).isActive()) return false;
             }
         }
         return true;
@@ -201,4 +205,35 @@ public class Memory implements MemoryAPI, Board{
     protected Card parseNgetCard(Coordinates coord){
         return this.getCard(this.boardParser.parseLetterCoord(coord),this.boardParser.parseNumberCoord(coord));
     }
+    /************************************************************************************************************
+     ***                                              observed                                                ***
+     ***********************************************************************************************************/
+
+    private List<localBoardChangeListener> boardChangeListenerList;
+
+    private void subscribeChangeListener(localBoardChangeListener changeListener){
+        this.boardChangeListenerList.add(changeListener);
+    }
+
+    private void notifyBoardChanged() {
+        //are there any listeners?
+        if(this.boardChangeListenerList == null || this.boardChangeListenerList.isEmpty()) return;
+        //yes there are - create new thread and inform them
+        (new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for(localBoardChangeListener listener : boardChangeListenerList){
+                    listener.changed();
+                }
+            }
+        })).start();
+    }
+
+
+    /************************************************************************************************************
+     ***                                              observer                                                ***
+     ***********************************************************************************************************/
+
+    //TODO
+
 }

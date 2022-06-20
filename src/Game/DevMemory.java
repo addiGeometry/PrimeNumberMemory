@@ -18,12 +18,6 @@ public class DevMemory extends Memory implements DevMemoryAPI{
         devBoard = boardGen.generateBoard6x6();
     }
 
-
-    @Override
-    public void surrender(PlayerLogic playerLogic) {
-
-    }
-
     @Override
     public Card[][] getBoard() {
         return devBoard;
@@ -31,6 +25,13 @@ public class DevMemory extends Memory implements DevMemoryAPI{
 
     @Override
     public void setPunkteStand(PlayerLogic playerLogic, int punkte) {
+    }
+
+    @Override
+    public void setPlayerScore(PlayerLogic playerLogic, int i){
+        for(int r=0; r<i; r++){
+            assign.get(playerLogic).incScore();
+        }
     }
 
     @Override

@@ -16,4 +16,6 @@ public interface DevMemoryAPI extends MemoryAPI{
     public String getFirstPlayer();
 
     public Card getCard(int i, int j);
+
+    public void setPlayerScore(PlayerLogic playerLogic, int i);
 }

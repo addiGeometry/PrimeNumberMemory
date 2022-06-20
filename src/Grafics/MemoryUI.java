@@ -1,8 +1,10 @@
 package Grafics;
 
+import Game.localBoardChangeListener;
+
 import java.io.*;
 
-public class MemoryGui{
+public class MemoryUI implements localBoardChangeListener {
     //Gui Options
     private static final String EXIT = "exit";
     private static final String CONNECT = "connect";
@@ -26,7 +28,7 @@ public class MemoryGui{
     private DesignBuilderImplementation designer;
 
 
-    public MemoryGui(String pN, InputStream in, PrintStream out){
+    public MemoryUI(String pN, InputStream in, PrintStream out){
         this.playerName = pN;
         this.outStream = out;
         this.inBufferedReader = new BufferedReader(new InputStreamReader(in));
@@ -99,7 +101,7 @@ public class MemoryGui{
     /************************************************************************************************************
      ***                                            UI Implementation                                         ***
      ***********************************************************************************************************/
-    private void doPrint() {
+    private void doPrint() throws IOException{
     }
 
     private void doFLip(String tiles) {
@@ -152,6 +154,16 @@ public class MemoryGui{
         m.append(".. exit");
 
         this.outStream.println(m.toString());
+    }
+
+    @Override
+    public void changed() {
+        try{
+            this.doPrint();
+        }
+        catch(IOException e){
+            System.err.println("not very expected: " + e.getLocalizedMessage());
+        }
     }
 }
 

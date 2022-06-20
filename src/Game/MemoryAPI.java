@@ -16,7 +16,7 @@ public interface MemoryAPI {
     /**
      * @param playerLogic Der Spieler der aufgibt
      */
-    void surrender(PlayerLogic playerLogic);
+    void surrender(PlayerLogic playerLogic) throws StatusException;
 
     /**
      * @return gebe das Aktuelle Feld zurück
@@ -24,8 +24,6 @@ public interface MemoryAPI {
     Card[][] getBoard();
 
     int hasScore(PlayerLogic playerLogic);
-
-    boolean isWinner(PlayerLogic p1);
 
     boolean isDraw();
 
