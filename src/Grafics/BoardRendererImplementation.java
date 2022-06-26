@@ -69,6 +69,7 @@ public class BoardRendererImplementation implements BoardRenderer {
                 }
                 else if( ((i==arow) && (j==acolumn))  || ((i==brow) && (j==bcolumn)) ){
                     build.append(LEFTEDGE);
+                    if (toRender[i][j].getValue() < 10) build.append("0");
                     build.append(toRender[i][j].getValue());
                     build.append(RIGHTEDGE);
                     build.append(" ");
