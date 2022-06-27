@@ -1,6 +1,10 @@
 package Game;
 
 
+import Grafics.BoardRenderer;
+import Grafics.BoardRendererImplementation;
+import Grafics.DesignBuilder;
+import Grafics.DesignBuilderImplementation;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -68,13 +72,13 @@ public class GameTests{
     public void alleKartenInaktiv(){
         /**     Spiel wird mit nur inaktiven Karten initialisiert
          *
-         *           1   2   3   4   5   6
-         *      A    x   x   x   x   x   x
-         *      B    x   x   x   x   x   x
-         *      C    x   x   x   x   x   x
-         *      D    x   x   x   x   x   x
-         *      E    x   x   x   x   x   x
-         *      F    x   x   x   x   x   x
+         *            1    2    3    4    5    6
+         *      A    xx   xx   xx   xx   xx   xx
+         *      B    xx   xx   xx   xx   xx   xx
+         *      C    xx   xx   xx   xx   xx   xx
+         *      D    xx   xx   xx   xx   xx   xx
+         *      E    xx   xx   xx   xx   xx   xx
+         *      F    xx   xx   xx   xx   xx   xx
          * */
 
         DevMemory devMemory = getDevMemory();
@@ -117,13 +121,13 @@ public class GameTests{
     public void zweiMalDieselbeKarte() throws NotYourTurnException, CardsGoneException, DoublePickException, StatusException, GameException {
         /**     Szenario: Alice beginnt und versucht zweimal dieselbe Karte aufzudecken
          *
-         *           1   2   3   4   5   6
-         *      A   [/] [/] [/] [/] [/] [/]
-         *      B   [/] [/] [/] [/] [/] [/]
-         *      C   [/] [/] [/] [/] [/] [/]
-         *      D   [/] [/] [/] [/] [/] [/]
-         *      E   [/] [/] [/] [/] [/] [/]
-         *      F   [/] [/] [/] [/] [/] [/]
+         *            1    2    3    4    5    6
+         *      A   [//] [//] [//] [//] [//] [//]
+         *      B   [//] [//] [//] [//] [//] [//]
+         *      C   [//] [//] [//] [//] [//] [//]
+         *      D   [//] [//] [//] [//] [//] [//]
+         *      E   [//] [//] [//] [//] [//] [//]
+         *      F   [//] [//] [//] [//] [//] [//]
          * */
         Memory memory = getMemory();
 
@@ -137,12 +141,12 @@ public class GameTests{
          *      und noch niemand hat gezogen. Deshalb ist eigentlich Alice dran, aber Bob versucht zu ziehen.
          *
          *           1   2   3   4   5   6
-         *      A   [/] [/] [/] [/] [/] [/]
-         *      B   [/] [/] [/] [/] [/] [/]
-         *      C   [/] [/] [/] [/] [/] [/]
-         *      D   [/] [/] [/] [/] [/] [/]
-         *      E   [/] [/] [/] [/] [/] [/]
-         *      F   [/] [/] [/] [/] [/] [/]
+         *      A   [//] [//] [//] [//] [//] [//]
+         *      B   [//] [//] [//] [//] [//] [//]
+         *      C   [//] [//] [//] [//] [//] [//]
+         *      D   [//] [//] [//] [//] [//] [//]
+         *      E   [//] [//] [//] [//] [//] [//]
+         *      F   [//] [//] [//] [//] [//] [//]
          * */
         Memory memory = getMemory();
 
@@ -154,13 +158,13 @@ public class GameTests{
     public void deckeKartenAufDieSchonWegSind() throws CardsGoneException, NotYourTurnException, DoublePickException, StatusException, GameException {
         /**     Szenario: A1,A2 fehlen - Beide sollen aufgedeckt werden - CardsGoneException soll geworfen werden weil
          *
-         *           1   2   3   4   5   6
-         *      A    x   x  [/] [/] [/] [/]
-         *      B   [/] [/] [/] [/] [/] [/]
-         *      C   [/] [/] [/] [/] [/] [/]
-         *      D   [/] [/] [/] [/] [/] [/]
-         *      E   [/] [/] [/] [/] [/] [/]
-         *      F   [/] [/] [/] [/] [/] [/]
+         *            1    2    3    4    5    6
+         *      A    xx   xx  [//] [//] [//] [//]
+         *      B   [//] [//] [//] [//] [//] [//]
+         *      C   [//] [//] [//] [//] [//] [//]
+         *      D   [//] [//] [//] [//] [//] [//]
+         *      E   [//] [//] [//] [//] [//] [//]
+         *      F   [//] [//] [//] [//] [//] [//]
          * */
 
         DevMemory devMemory = getDevMemory();
@@ -177,12 +181,12 @@ public class GameTests{
         /**     Szenario: A1,A2 fehlen - Eine Karte soll aufgedeckt werden, die schon weg ist. CardsGoneException soll geworfen werden.
          *
          *           1   2   3   4   5   6
-         *      A    x  [/]  [/] [/] [/] [/]
-         *      B   [/] [/] [/] [/] [/] [/]
-         *      C   [/] [/] [/] [/] [/] [/]
-         *      D   [/] [/] [/] [/] [/] [/]
-         *      E   [/] [/] [/] [/] [/] [/]
-         *      F   [/] [/] [/] [/] [/] [/]
+         *      A    xx   xx  [//] [//] [//] [//]
+         *      B   [//] [//] [//] [//] [//] [//]
+         *      C   [//] [//] [//] [//] [//] [//]
+         *      D   [//] [//] [//] [//] [//] [//]
+         *      E   [//] [//] [//] [//] [//] [//]
+         *      F   [//] [//] [//] [//] [//] [//]
          * */
 
         DevMemory devMemory = getDevMemory();
@@ -198,12 +202,12 @@ public class GameTests{
              *      Spielbrett.
              *
              *           1   2   3   4   5   6
-             *      A   [2] [2] [/] [/] [/] [/]
-             *      B   [/] [/] [/] [/] [/] [/]
-             *      C   [/] [/] [/] [/] [/] [/]
-             *      D   [/] [/] [/] [/] [/] [/]
-             *      E   [/] [/] [/] [/] [/] [/]
-             *      F   [/] [/] [/] [/] [/] [/]
+             *      A   [02] [02] [//] [//] [//] [//]
+             *      B   [//] [//] [//] [//] [//] [//]
+             *      C   [//] [//] [//] [//] [//] [//]
+             *      D   [//] [//] [//] [//] [//] [//]
+             *      E   [//] [//] [//] [//] [//] [//]
+             *      F   [//] [//] [//] [//] [//] [//]
              * */
 
             Card[][] testFeld = new Card[][] {
@@ -237,12 +241,12 @@ public class GameTests{
         /**     Szenario: A1,A2 sind beide "2" und werden von Alice aufgedeckt. Paaranzahl von Alice erhöht sich
          *
          *           1   2   3   4   5   6
-         *      A   [2] [2] [/] [/] [/] [/]
-         *      B   [/] [/] [/] [/] [/] [/]
-         *      C   [/] [/] [/] [/] [/] [/]
-         *      D   [/] [/] [/] [/] [/] [/]
-         *      E   [/] [/] [/] [/] [/] [/]
-         *      F   [/] [/] [/] [/] [/] [/]
+         *      A   [02] [02] [//] [//] [//] [//]
+         *      B   [//] [//] [//] [//] [//] [//]
+         *      C   [//] [//] [//] [//] [//] [//]
+         *      D   [//] [//] [//] [//] [//] [//]
+         *      E   [//] [//] [//] [//] [//] [//]
+         *      F   [//] [//] [//] [//] [//] [//]
          * */
 
         Card[][] testFeld = new Card[][] {
@@ -276,12 +280,12 @@ public class GameTests{
         /**     Szenario: A1,A2 sind beide "2" und werden von Alice aufgedeckt. Jetzt ist Bob dran
          *
          *           1   2   3   4   5   6
-         *      A   [2] [2] [/] [/] [/] [/]
-         *      B   [/] [/] [/] [/] [/] [/]
-         *      C   [/] [/] [/] [/] [/] [/]
-         *      D   [/] [/] [/] [/] [/] [/]
-         *      E   [/] [/] [/] [/] [/] [/]
-         *      F   [/] [/] [/] [/] [/] [/]
+         *      A   [02] [02] [//] [//] [//] [//]
+         *      B   [//] [//] [//] [//] [//] [//]
+         *      C   [//] [//] [//] [//] [//] [//]
+         *      D   [//] [//] [//] [//] [//] [//]
+         *      E   [//] [//] [//] [//] [//] [//]
+         *      F   [//] [//] [//] [//] [//] [//]
          * */
 
         Card[][] testFeld = new Card[][] {
@@ -308,13 +312,14 @@ public class GameTests{
     @Test
     public void spielerGewinnt() throws NotYourTurnException, CardsGoneException, DoublePickException, StatusException, GameException {
         /**     Szenario: Alice gewinnt (Im ersten Zug weil das Feld manipuliert worden ist)
-         *           1   2   3   4   5   6
-         *      A    x   x   x   x   x   x
-         *      B    x  [2]  x   x   x   x
-         *      C    x   x   x   x   x   x
-         *      D    x   x   x   x   x   x
-         *      E    x   x   x  [2]  x   x
-         *      F    x   x   x   x   x   x
+         *
+         *            1    2    3    4    5    6
+         *      A    xx   xx   xx   xx   xx   xx
+         *      B    xx  [02]  xx   xx   xx   xx
+         *      C    xx   xx   xx   xx   xx   xx
+         *      D    xx   xx   xx   xx   xx   xx
+         *      E    xx   xx   xx  [02]  xx   xx
+         *      F    xx   xx   xx   xx   xx   xx
          * */
         toDeactivate.deactivate();
         Card[][] testFeld = new Card[][] {
@@ -337,17 +342,53 @@ public class GameTests{
     }
 
     @Test
+    public void funnyCardNotUniqueBug() throws StatusException, NotYourTurnException, CardsGoneException, DoublePickException, GameException {
+        /**
+         * Aufgepasst diese Methode provoziert (absichtlich) einen lustigen Bug, der aber im normalen Spiel nicht eintreten kann:
+         * Ergebnis wenn alle Karten dummys sind und beide (in Wahrheit nur eine ;) deaktiviert wird.
+         *
+         *                    1    2    3    4    5    6
+         *              A    xx   xx   xx   xx   xx   xx
+         *              B    xx   xx   xx   xx   xx   xx
+         *              C    xx   xx   xx   xx   xx   xx
+         *              D    xx   xx   xx   xx   xx   xx
+         *              E    xx   xx   xx   xx   xx   xx
+         *              F    xx   xx   xx   xx   xx   xx
+         *
+         */
+        Card[][] testFeld = new Card[][] {
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy}
+        };
+
+        DevMemory demory = new DevMemory(PlayerLogic.P1, PlayerLogic.P2, "test");
+
+        BoardRenderer render = new BoardRendererImplementation();
+        DesignBuilder desiBuild = new DesignBuilderImplementation();
+
+        demory.setBoard(testFeld);
+
+        demory.flip(PlayerLogic.P1,Coordinates.A1,Coordinates.A2);
+
+        System.out.println(desiBuild.returnBorderedOutput(render.renderOpenBoard(demory.getDevBoard(), Coordinates.D5, Coordinates.C2)));
+    }
+
+    @Test
     public void testeUnentschieden() throws NotYourTurnException, CardsGoneException, DoublePickException{
         /**     Szenario: Alice nimmt die letzten zwei Karten und verursacht
          *      ein Unentschieden, weil danach Punktegleichstand herrscht.
          *
-         *           1   2   3   4   5   6
-         *      A    x   x   x   x   x   x
-         *      B    x  [2]  x   x   x   x
-         *      C    x   x   x   x   x   x
-         *      D    x   x   x   x   x   x
-         *      E    x   x   x  [2]  x   x
-         *      F    x   x   x   x   x   x
+         *            1    2    3    4    5    6
+         *      A    xx   xx   xx   xx   xx   xx
+         *      B    xx  [02]  xx   xx   xx   xx
+         *      C    xx   xx   xx   xx   xx   xx
+         *      D    xx   xx   xx   xx   xx   xx
+         *      E    xx   xx   xx  [02]  xx   xx
+         *      F    xx   xx   xx   xx   xx   xx
          * */
 
         Card[][] testFeld = new Card[][] {
@@ -385,13 +426,13 @@ public class GameTests{
         /**     Szenario: Bob gibt auf, weil er keine Chancen mehr sieht zu gewinnen
          *      ⇨ Somit hat PLAYER_LOGIC_1, Alice gewonnen
          *
-         *           1   2   3   4   5   6
-         *      A   [/] [/] [/] [/] [/] [/]
-         *      B   [/] [/] [/] [/] [/] [/]
-         *      C   [/] [/] [/] [/] [/] [/]
-         *      D   [/] [/] [/] [/] [/] [/]
-         *      E   [/] [/] [/] [/] [/] [/]
-         *      F   [/] [/] [/] [/] [/] [/]
+         *            1    2    3    4    5    6
+         *      A   [//] [//] [//] [//] [//] [//]
+         *      B   [//] [//] [//] [//] [//] [//]
+         *      C   [//] [//] [//] [//] [//] [//]
+         *      D   [//] [//] [//] [//] [//] [//]
+         *      E   [//] [//] [//] [//] [//] [//]
+         *      F   [//] [//] [//] [//] [//] [//]
          * */
         DevMemory devMemory = getDevMemory();
 
@@ -405,13 +446,13 @@ public class GameTests{
         /**     Szenario: Bob gibt auf, weil er keine Chancen mehr sieht zu gewinnen
          *      ⇨ Somit hat PLAYER_LOGIC_1, Alice gewonnen
          *
-         *           1   2   3   4   5   6
-         *      A   [/] [/] [/] [/] [/] [/]
-         *      B   [/] [/] [/] [/] [/] [/]
-         *      C   [/] [/] [/] [/] [/] [/]
-         *      D   [/] [/] [/] [/] [/] [/]
-         *      E   [/] [/] [/] [/] [/] [/]
-         *      F   [/] [/] [/] [/] [/] [/]
+         *            1    2    3    4    5    6
+         *      A   [//] [//] [//] [//] [//] [//]
+         *      B   [//] [//] [//] [//] [//] [//]
+         *      C   [//] [//] [//] [//] [//] [//]
+         *      D   [//] [//] [//] [//] [//] [//]
+         *      E   [//] [//] [//] [//] [//] [//]
+         *      F   [//] [//] [//] [//] [//] [//]
          * */
         boolean expectedOtherSideWinner = true;
 

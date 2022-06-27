@@ -1,15 +1,15 @@
 package Grafics;
 
-import Game.Card;
-import Game.Coordinates;
-import Game.Memory;
-import Game.PlayerLogic;
+import Game.*;
 import org.junit.Test;
 
-public class GraficTests {
+public class GraficTests{
     /**
     Test für "ausgeschmückte Terminal-Dialoge
      */
+
+    Card testCard = new CardImplementation(2);
+    Card dummy = new CardImplementation(4);//Dummy-Karte 4 ist keine Primzahl
 
    @Test
     public void test1(){
@@ -24,22 +24,25 @@ public class GraficTests {
 
    }
    @Test
-    public void test2(){
+    public void wieEsClosedAussehenSoll(){
        DesignBuilder desiBuild = new DesignBuilderImplementation();
-       String feld =    "                                                      "     +
-                        "                   1   2   3   4   5   6              \n"   +
-                        "             A    x   x  [/] [/] [/] [/]             \n"    +
-                        "             B   [/] [/] [/] [/] [/] [/]             \n"    +
-                        "             C   [/] [/] [/] [/] [/] [/]             \n"    +
-                        "             D   [/] [/] [/] [/] [/] [/]             \n"    +
-                        "             E   [/] [/] [/] [/] [/] [/]             \n"    +
-                        "             F   [/] [/] [/] [/] [/] [/]             ";
+       String feld =
+               "                                                      "     +
+               "                   1    2    3    4    5    6       \n"     +
+               "              A   [//] [//] [//] [//] [//] [//]      \n"    +
+               "              B   [//] [//] [//] [//] [//] [//]      \n"    +
+               "              C   [//] [//] [//] [//] [//] [//]      \n"    +
+               "              D   [//] [//] [//] [//] [//] [//]      \n"    +
+               "              E   [//] [//] [//] [//] [//] [//]      \n"    +
+               "              F   [//] [//] [//] [//] [//] [//]     \n"     +
+               "                                                      ";
+
 
        System.out.println(desiBuild.returnBorderedOutput(feld));
    }
 
     @Test
-    public void boardOnStart() {
+    public void openBoardOnStart() {
         Memory memory = new Memory(PlayerLogic.P1, PlayerLogic.P2, "test");
 
         BoardRenderer render = new BoardRendererImplementation();
@@ -49,19 +52,106 @@ public class GraficTests {
     }
 
     @Test
-    public void boardTwoCardsFlipped() {
+    public void openBoardTwoCardsMissing() throws StatusException, NotYourTurnException, CardsGoneException, DoublePickException, GameException {
+        /**     Generiere das Board mit D5, C2 aufgedeckt, nachdem zwei Karten weg sind
+         *
+         *           1   2   3   4   5   6
+         *      A   [//] [//] [//] [//] [//] [//]
+         *      B   [//] [//] [//] [//] [//] [//]
+         *      C   [//] [//] [//] [//] [//] [//]
+         *      D   [//] [//] [//] [//] [//] [//]
+         *      E   [//] [//] [//] [//] [//] [//]
+         *      F   [//] [//] [//] [//] [//] [//]
+         * */
+
+        Card[][] testFeld = new Card[][] {
+                {testCard,testCard,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy}
+        };
+
+       DevMemory demory = new DevMemory(PlayerLogic.P1, PlayerLogic.P2, "test");
+
+        BoardRenderer render = new BoardRendererImplementation();
+        DesignBuilder desiBuild = new DesignBuilderImplementation();
+
+        demory.setBoard(testFeld);
+
+        demory.flip(PlayerLogic.P1,Coordinates.A1,Coordinates.A2);
+
+        System.out.println(desiBuild.returnBorderedOutput(render.renderOpenBoard(demory.getDevBoard(), Coordinates.D5, Coordinates.C2)));
+    }
+    @Test
+    public void closedBoardFourCardsFlipped() throws StatusException, NotYourTurnException, CardsGoneException, DoublePickException, GameException {
+        /**     Generiere das Board, bei dem die Karten A1,A2,D4 und E3 schon inaktiv sind,
+         *
+         *            1    2    3    4    5    6
+         *      A    xx   xx  [//] [//] [//] [//]
+         *      B   [//] [//] [//] [//] [//] [//]
+         *      C   [//] [//] [//] [//] [//] [//]
+         *      D   [//] [//] [//]  xx  [//] [//]
+         *      E   [//] [//]  xx  [//] [//] [//]
+         *      F   [//] [//] [//] [//] [//] [//]
+         * */
+
+        Card[][] testFeld = new Card[][] {
+                {testCard,testCard,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,testCard,dummy,dummy},
+                {dummy,dummy,testCard,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy}
+        };
+
+        DevMemory demory = new DevMemory(PlayerLogic.P1, PlayerLogic.P2, "test");
+
+        BoardRenderer render = new BoardRendererImplementation();
+        DesignBuilder desiBuild = new DesignBuilderImplementation();
+
+        demory.setBoard(testFeld);
+
+        demory.flip(PlayerLogic.P1,Coordinates.A1,Coordinates.A2);
+
+        System.out.println(desiBuild.returnBorderedOutput(render.renderClosedBoard(demory.getDevBoard(), Coordinates.D5, Coordinates.C3)));
     }
 
     @Test
-    public void boardTwoCardsMissing() {
-    }
+    public void emptyBoard() throws StatusException, NotYourTurnException, CardsGoneException, DoublePickException, GameException {
+        /**
+         * Aufgepasst diese Methode provoziert (absichtlich) einen lustigen Bug, der aber im normalen Spiel nicht eintreten kann:
+         * Ergebnis wenn alle Karten dummys sind und beide (in Wahrheit nur eine ;) deaktiviert wird.
+         *
+         *                    1    2    3    4    5    6
+         *              A    xx   xx   xx   xx   xx   xx
+         *              B    xx   xx   xx   xx   xx   xx
+         *              C    xx   xx   xx   xx   xx   xx
+         *              D    xx   xx   xx   xx   xx   xx
+         *              E    xx   xx   xx   xx   xx   xx
+         *              F    xx   xx   xx   xx   xx   xx
+         *
+         */
+        Card[][] testFeld = new Card[][] {
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy},
+                {dummy,dummy,dummy,dummy,dummy,dummy}
+        };
 
-    @Test
-    public void boardMoreThenTwoCardsMissing() {
-    }
+        DevMemory demory = new DevMemory(PlayerLogic.P1, PlayerLogic.P2, "test");
 
-    @Test
-    public void boardTwoRandomCardsFlipped() {
+        BoardRenderer render = new BoardRendererImplementation();
+        DesignBuilder desiBuild = new DesignBuilderImplementation();
+
+        demory.setBoard(testFeld);
+
+        demory.flip(PlayerLogic.P1,Coordinates.A1,Coordinates.A2);
+
+        System.out.println(desiBuild.returnBorderedOutput(render.renderOpenBoard(demory.getDevBoard(), Coordinates.D5, Coordinates.C2)));
     }
 
 }

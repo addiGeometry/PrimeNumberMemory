@@ -1,6 +1,6 @@
 package Game;
 
-class CardImplementation implements Card {
+public class CardImplementation implements Card {
     private int value;
     private boolean faceup;
     private boolean active;

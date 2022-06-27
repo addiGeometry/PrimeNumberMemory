@@ -1,5 +1,8 @@
 package Grafics;
 
+import Game.Board;
+import Game.Memory;
+import Game.MemoryAPI;
 import Game.localBoardChangeListener;
 
 import java.io.*;
@@ -14,7 +17,26 @@ public class MemoryUI implements localBoardChangeListener {
     private static final String RULES = "rules";
     private static final String SURRENDER = "surrender";
 
+    private final Board spielbrett;
 
+    private final MemoryAPI api;
+
+    public static void main(String[] args) {
+        System.out.println("Welcome to Prime Number Memory version 1.0");
+
+        if(args.length < 1){
+            System.err.println("there needs to be a player for a game");
+            System.exit(1);
+        }
+
+        System.out.println("Greatings " + args[0]);
+        System.out.println("Enjoy the ride");
+
+        MemoryUI userCMD = new MemoryUI(args[0],System.in, System.out);
+
+        userCMD.printInstructions();
+        userCMD.doCommandLoop();
+    }
 
 
     //Stream Logic
@@ -34,6 +56,9 @@ public class MemoryUI implements localBoardChangeListener {
         this.inBufferedReader = new BufferedReader(new InputStreamReader(in));
         /* More awesome stuff to come! **/
         designer = new DesignBuilderImplementation();
+
+        this.api = new Memory();
+        this.spielbrett = new
     }
 
     public void doCommandLoop(){

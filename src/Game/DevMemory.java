@@ -13,6 +13,10 @@ public class DevMemory extends Memory implements DevMemoryAPI{
         else return remotePlayerName;
     }
 
+    public Card[][] getDevBoard(){
+        return devBoard;
+    }
+
     public DevMemory(PlayerLogic p1, PlayerLogic p2, String name){
         super(p1, p2, name);
         devBoard = boardGen.generateBoard6x6();
