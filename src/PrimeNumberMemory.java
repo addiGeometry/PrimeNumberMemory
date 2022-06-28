@@ -1,4 +1,4 @@
-import Grafics.MemoryUI;
+import grafics.MemoryUI;
 
 public class PrimeNumberMemory {
     public static void main(String args[]){
